@@ -1,0 +1,72 @@
+version: 0.2
+
+env:
+  shell: bash
+  variables:
+    INSTANCE_COUNT: 2   # number of QNX instances to launch
+    LIST_OF_INSTANCES: "list_of_instances.txt"
+    ARGS: "arguments.txt"
+    INSTS_ARGS: "insts_args.txt"
+
+phases:
+  install:
+    commands:
+      # Install Terraform command
+      - git clone https://github.com/tfutils/tfenv.git ~/.tfenv
+      - ln -s ~/.tfenv/bin/* /usr/local/bin
+      - tfenv install ${TF_VERSION}
+      - tfenv use ${TF_VERSION}
+
+  pre_build:
+    on-failure: CONTINUE
+    commands:
+      # Deploy resources with Terraform
+      - terraform init
+        -backend=true
+        -backend-config="bucket=${TF_BACKEND_S3}"
+        -backend-config="key=prod/terraform.tfstate"
+        -backend-config="region=${AWS_REGION}"
+
+      - terraform apply 
+        -var "vpc_id=${VPC_ID}"
+        -var "private_subnet_id=${PRIVATE_SUBNET_ID}"
+        -var "vpc_cidr_block=${VPC_CIDR_BLOCK}"
+        -var "key_pair_name=${KEY_PAIR_NAME}"
+        -var "kms_key_id=${KMS_KEY_ID}"
+        -var "instance_count=${INSTANCE_COUNT}"
+        -auto-approve
+        -compact-warnings > /dev/null
+
+      # Get private key from Secrets Manager secret
+      - SSH_PRIVATE_KEY=$(aws secretsmanager get-secret-value --secret-id ${PRIVATE_KEY_SECRET_ID} --query SecretString --output text)
+
+      # Set ssh private key
+      - eval $(ssh-agent -s)
+      - echo "${SSH_PRIVATE_KEY}" | ssh-add -
+
+      # Create list of hosts and args
+      - terraform output -json list_of_ec2_instance_qnx_safety_private_dns | jq -r '.[]' > "${LIST_OF_INSTANCES}"
+      - paste -d, ${LIST_OF_INSTANCES} ${ARGS} > "${INSTS_ARGS}"
+
+      # Copy application to target hosts
+      - for HOST in $(cat ${LIST_OF_INSTANCES});
+        do scp -q -P 22 -r -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null app/ "root@${HOST}:"; done
+
+  build:
+    commands:
+      # Run commands
+      - for LINE in $(cat ${INSTS_ARGS});
+        do HOST=$(echo ${LINE} | cut -d, -f1); ARG=$(echo ${LINE} | cut -d, -f2);
+        ssh -q -p 22 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@${HOST} "/root/app/run_command.sh \"${ARG}\""; done
+
+    finally:
+      # Terraform destroy
+      - terraform destroy
+        -var "vpc_id=${VPC_ID}"
+        -var "private_subnet_id=${PRIVATE_SUBNET_ID}"
+        -var "vpc_cidr_block=${VPC_CIDR_BLOCK}"
+        -var "key_pair_name=${KEY_PAIR_NAME}"
+        -var "kms_key_id=${KMS_KEY_ID}"
+        -var "instance_count=${INSTANCE_COUNT}"
+        -auto-approve
+        -compact-warnings

@@ -19,7 +19,7 @@ This repository provides the workshop package and instructions to build the base
 
 ## Architecture overview
 
-In the workshop, we will deploy development environment based on the following architecture.
+In the workshop, we will deploy AWS resources based on the following architecture.
 
 <img src="image/qnx-workshop-architecture-diagram.drawio.png" width="1000" alt="Architecture Diagram">
 
@@ -32,6 +32,7 @@ In the workshop, we will deploy development environment based on the following a
     * If you choose to use the EC2 development host (SDP installed on an EC2 instance), each user securely establishes a connection with SSM port forwarding using Session Manager, and logs into Ubuntu Linux using Remote Desktop client from your client PC.
     * If you choose to use the local development host (SDP installed on your client PC), you just login to your client PC.
 * QNX target
+    * EC2 QNX instance (QNX target) is deployed within an isolated secure VPC network on AWS.
     * To securely access to the EC2 QNX target, each user securely establishes a connection with SSM port forwarding using Session Manager, and logs into EC2 QNX instance using SSH client.
 * CI pipeline
     * The workshop creates CodeBuild project, CodeCommit repository, CodePipeline pipeline and VPC endpoints to run Continuous Integration (CI) pipeline with EC2 QNX instances.

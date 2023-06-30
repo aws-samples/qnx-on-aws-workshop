@@ -14,7 +14,7 @@ BlackBerry® QNX® has been widely used to build mission-critical embedded syste
 With the combination of new QNX Amazon Machine Image (AMI) and Amazon EC2 instance powered by AWS Graviton Processor (Arm-based processor developed by AWS), AWS customers can leverage the agility, flexibility and scale of AWS Cloud for the embedded software development.
 
 
-This repository provides the workshop package and instructions to build the base environment for the workshop. For the detail of the workshop steps, please refer to the instructions in [BlackBerry QNX on AWS workshop](https://catalog.aws.workshop/qnx-on-aws-workshop).
+This repository provides the workshop package and instructions to build the base environment for the workshop. For the detail of the workshop steps, please refer to the instructions in [BlackBerry QNX on AWS workshop](https://catalog.workshops.aws/qnx-on-aws).
 
 
 ## Architecture overview

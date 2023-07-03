@@ -11,10 +11,10 @@ In January 2023, BlackBerry Limited [announced general availability](https://www
 
 BlackBerry® QNX® has been widely used to build mission-critical embedded systems across industries such as automotive, robotics, aerospace, avionics, energy and medical.
 
-With the combination of new QNX Amazon Machine Image (AMI) and Amazon EC2 instance powered by AWS Graviton Processor (Arm-based processor developed by AWS), AWS customers can leverage the agility, flexibility and scale of AWS Cloud for the embedded software development.
+With the combination of new QNX Amazon Machine Image (AMI) and Amazon EC2 instance powered by AWS Graviton Processor (Arm-based processor developed by AWS), AWS customers can leverage the agility, flexibility and scalability of AWS Cloud for the embedded software development.
 
 
-This repository provides the workshop package and instructions to build the base environment for the workshop. For the detail of the workshop steps, please refer to the instructions in [BlackBerry QNX on AWS workshop](https://catalog.workshops.aws/qnx-on-aws).
+This repository provides the workshop package and quick instructions to build the base environment for the workshop. For the full instructions, please refer to [BlackBerry QNX on AWS workshop](https://catalog.workshops.aws/qnx-on-aws).
 
 
 ## Architecture overview
@@ -27,13 +27,13 @@ In the workshop, we will deploy AWS resources based on the following architectur
 * AWS account, users and resources
     * The workshop resources are deployed in a single AWS account.
     * Each user in the AWS account is authenticated by a unique user ID.
-    * The workshop deploys resources such as VPC, EC2 Ubuntu instance, EC2 QNX instance etc. for respective user.
+    * The workshop deploys resources such as VPC, EC2 Ubuntu instance, EC2 QNX instance etc. for each user.
 * QNX development host
-    * If you choose to use the EC2 development host (SDP installed on an EC2 instance), each user securely establishes a connection with SSM port forwarding using Session Manager, and logs into Ubuntu Linux using Remote Desktop client from your client PC.
-    * If you choose to use the local development host (SDP installed on your client PC), you just login to your client PC.
+    * If you choose to use the EC2 development host (QNX SDP installed on an EC2 instance), each user securely establishes a connection with SSM port forwarding using Session Manager, and logs into Ubuntu Linux using Remote Desktop client from the client PC.
+    * If you choose to use the local development host (QNX SDP installed on the client PC), you just login to the client PC.
 * QNX target
     * EC2 QNX instance (QNX target) is deployed within an isolated secure VPC network on AWS.
-    * To securely access to the EC2 QNX target, each user securely establishes a connection with SSM port forwarding using Session Manager, and logs into EC2 QNX instance using SSH client.
+    * To securely access the EC2 QNX target, each user securely establishes a connection with SSM port forwarding using Session Manager, and logs into the EC2 QNX instance using SSH client.
 * CI pipeline
     * The workshop creates CodeBuild project, CodeCommit repository, CodePipeline pipeline and VPC endpoints to run Continuous Integration (CI) pipeline with EC2 QNX instances.
     * CodeBuild container deploys CI pipeline resources such as EC2 QNX instances and its private key in a Secrets Manager secret, and runs defined CI tasks. It automatically destroys the created resources once the CI tasks are completed.

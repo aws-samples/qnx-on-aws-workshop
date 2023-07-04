@@ -57,7 +57,7 @@ phases:
       # Run commands
       - for LINE in $(cat ${INSTS_ARGS});
         do HOST=$(echo ${LINE} | cut -d, -f1); ARG=$(echo ${LINE} | cut -d, -f2);
-        ssh -q -p 22 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@${HOST} "/root/app/run_command.sh \"${ARG}\""; done
+        ssh -q -p 22 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@${HOST} "chmod u+x /root/app/*; /root/app/run_command.sh \"${ARG}\""; done
 
     finally:
       # Terraform destroy

@@ -4,14 +4,14 @@
 
 In the BlackBerry QNX on AWS workshop, you can easily get started with embedded software development on AWS Cloud. The workshop provides a hands-on lab experience to help customers quickly grasp embedded software development with QNX® OS on AWS.
 
-In January 2023, BlackBerry Limited [announced general availability](https://www.blackberry.com/us/en/company/newsroom/press-releases/2023/blackberry-introduces-qnx-accelerate-announces-global-availability-of-blackberry-qnx-rtos-and-qnx-os-for-safety-in-aws-marketplace) of the following QNX Operating Systems on AWS via the AWS Marketplace.
+In January 2023, BlackBerry Limited [announced the general availability](https://www.blackberry.com/us/en/company/newsroom/press-releases/2023/blackberry-introduces-qnx-accelerate-announces-global-availability-of-blackberry-qnx-rtos-and-qnx-os-for-safety-in-aws-marketplace) of the following QNX Operating Systems on AWS via the AWS Marketplace:
 
 * [QNX® Neutrino® Real Time Operating System (RTOS)](https://aws.amazon.com/marketplace/pp/prodview-wjqoq2mq7hrhc)
 * [QNX® OS for Safety](https://aws.amazon.com/marketplace/pp/prodview-26pvihq76slfa)
 
 BlackBerry® QNX® has been widely used to build mission-critical embedded systems across industries such as automotive, robotics, aerospace, avionics, energy and medical.
 
-With the combination of new QNX Amazon Machine Image (AMI) and Amazon EC2 instance powered by AWS Graviton Processor (Arm-based processor developed by AWS), AWS customers can leverage the agility, flexibility and scalability of AWS Cloud for the embedded software development.
+With the combination of new QNX Amazon Machine Image (AMI) and Amazon EC2 instances powered by AWS Graviton Processors (an Arm-based processor developed by AWS), AWS customers can use the agility, flexibility and scalability of the AWS Cloud to support their embedded software development.
 
 
 This repository provides the workshop package and quick instructions to build the base environment for the workshop. For the full instructions, please refer to [BlackBerry QNX on AWS workshop](https://catalog.workshops.aws/qnx-on-aws).
@@ -29,14 +29,14 @@ In the workshop, we will deploy AWS resources based on the following architectur
     * Each user in the AWS account is authenticated by a unique user ID.
     * The workshop deploys resources such as VPC, EC2 Ubuntu instance, EC2 QNX instance etc. for each user.
 * QNX development host
-    * If you choose to use the EC2 development host (QNX SDP installed on an EC2 instance), each user securely establishes a connection with SSM port forwarding using Session Manager, and logs into Ubuntu Linux using Remote Desktop client from the client PC.
-    * If you choose to use the local development host (QNX SDP installed on the client PC), you just login to the client PC.
+    * If you choose to use the EC2 development host (QNX SDP installed on an EC2 instance), each user securely establishes a connection with SSM port forwarding using Session Manager, and logs into Ubuntu Linux using Remote Desktop client from the client PC. EC2 Ubuntu instance private key is securely managed in a Secrets Manager secret.
+    * If you choose to use the local development host (QNX SDP installed on the client PC), each user logs into the client PC.
 * QNX target
-    * EC2 QNX instance (QNX target) is deployed within an isolated secure VPC network on AWS.
-    * To securely access the EC2 QNX target, each user securely establishes a connection with SSM port forwarding using Session Manager, and logs into the EC2 QNX instance using SSH client.
+    * EC2 QNX instance (QNX target) is deployed in an isolated secure VPC network on AWS.
+    * To securely access the EC2 QNX target, each user securely establishes a connection with SSM port forwarding using Session Manager, and logs into the EC2 QNX instance using SSH client. EC2 QNX instance private key is securely managed in a Secrets Manager secret.
 * CI pipeline
     * The workshop creates CodeBuild project, CodeCommit repository, CodePipeline pipeline and VPC endpoints to run Continuous Integration (CI) pipeline with EC2 QNX instances.
-    * CodeBuild container deploys CI pipeline resources such as EC2 QNX instances and its private key in a Secrets Manager secret, and runs defined CI tasks. It automatically destroys the created resources once the CI tasks are completed.
+    * CodeBuild container deploys CI pipeline resources such as EC2 QNX instances, and runs pre-defined CI tasks. It automatically destroys the created resources once the CI tasks are completed.
 
 
 ## File structure

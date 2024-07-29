@@ -1,1 +1,3 @@
-ubuntu_user_password = "<YOUR_PASSWORD>"    # Ubuntu 'ubuntu' user password
+ubuntu_user_password         = "<your_password>"          # Ubuntu 'ubuntu' user password
+github_user                  = "<github_user>"            # GitHub user name for CI/CD
+github_repo                  = "<github_repo>"            # GitHub repository name for CI/CD

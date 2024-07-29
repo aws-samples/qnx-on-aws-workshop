@@ -35,7 +35,7 @@ In the workshop, we will deploy AWS resources based on the following architectur
     * EC2 QNX instance (QNX target) is deployed in an isolated secure VPC network on AWS.
     * To securely access the EC2 QNX target, each user securely establishes a connection with SSM port forwarding using Session Manager, and logs into the EC2 QNX instance using SSH client. EC2 QNX instance private key is securely managed in a Secrets Manager secret.
 * CI pipeline
-    * The workshop creates CodeBuild project, CodeCommit repository, CodePipeline pipeline and VPC endpoints to run Continuous Integration (CI) pipeline with EC2 QNX instances.
+    * The workshop creates CodeBuild project, CodePipeline pipeline and VPC endpoints to run Continuous Integration (CI) pipeline with EC2 QNX instances.
     * CodeBuild container deploys CI pipeline resources such as EC2 QNX instances, and runs pre-defined CI tasks. It automatically destroys the created resources once the CI tasks are completed.
 
 
@@ -50,7 +50,7 @@ qnx-on-aws-workshop/
 ├── INSTRUCTIONS.md
 ├── LICENSE
 ├── README.md
-├── codecommit-example-repo/            # CodeBuild files stored in CodeCommit repository
+├── github-example-repo/            # CodeBuild files stored in GitHub repository
 │   ├── app/
 │   │   └── run_command.sh              # Sample CI application
 │   ├── arguments.txt                   # List of arguments passed to CI application
@@ -137,6 +137,10 @@ In the workshop, we will use the following QNX products with an evaluation licen
 In the workshop, we will use the following QNX product with AWS Marketplace subscription.
 
 * QNX® OS for Safety 2.2.3
+
+### GitHub repository
+
+In the workshop, we use a GitHub repository for CI/CD. Please create a GitHub user, repository before the workshop. 
 
 
 ## Instructions

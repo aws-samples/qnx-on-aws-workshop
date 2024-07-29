@@ -46,12 +46,12 @@ output "ec2_instance_qnx_safety_private_ip" {
 #   value       = module.ec2_instance_qnx_neutrino.private_ip
 # }
 
-output "codecommit_repository_url" {
-  description = "CodeCommit repository URL"
-  value       = aws_codecommit_repository.workshop.clone_url_http
+output "github_repository_url" {
+  description = "GitHub repository URL"
+  value       = "https://github.com/${var.github_user}/${var.github_repo}"
 }
 
-output "codecommit_repository_name" {
-  description = "CodeCommit repository name"
-  value       = aws_codecommit_repository.workshop.repository_name
+output "github_repository_name" {
+  description = "GitHub repository name"
+  value       = var.github_repo
 }

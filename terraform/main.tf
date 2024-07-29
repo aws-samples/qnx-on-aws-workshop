@@ -64,11 +64,6 @@ locals {
     ebs_root_volume_size  = "20"
   }
 
-  # Parameters for CodeCommit
-  codecommit = {
-    repository_name = "${local.name}-hello-world" # CodeCommit repository name for QNX project
-  }
-
   # Parameters for CodeBuild
   codebuild = {
     tf_version = "1.9.3"

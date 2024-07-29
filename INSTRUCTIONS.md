@@ -15,6 +15,9 @@ Please make sure you have the following information before working on the worksh
 * BlackBerry QNX
     * myQNX Account, Password
     * Evaluation license reference serial number of QNX SDP 7.x
+* GitHub
+    * GitHub user
+    * GitHub repository
 * Unique 2-digit ID per participant
 
 | :exclamation: Assign and use a unique 2-digit ID per participant |
@@ -75,10 +78,12 @@ Copy `terraform/terraform.tfvars.template` file to `terraform/terraform.tfvars`.
 cp terraform/terraform.tfvars.template terraform/terraform.tfvars
 ```
 
-Update ubuntu default password information in `terraform/terraform.tfvars`.
+Update configurations in `terraform/terraform.tfvars`.
 
 ```shell
-ubuntu_user_password    = "<YOUR_PASSWORD>" # Ubuntu 'ubuntu' user password
+ubuntu_user_password         = "<your_password>"          # Ubuntu 'ubuntu' user password
+github_user                  = "<github_user>"            # GitHub user name for CI/CD
+github_repo                  = "<github_repo>"            # GitHub repository name for CI/CD
 ```
 
 Open `terraform/main.tf` file, then replace the following values in Terraform local values configuration.
@@ -199,7 +204,7 @@ $ aws ec2 describe-images --image-ids ami-04f6f6c2a180cd137
 Comment out the existing AMI ID configuration and replace it with the newly created AMI ID in the following two files. Your custom QNX AMI ID should be different from others'.
 
 * `terraform/main.tf`
-* `codecommit-example-repo/main.tf`
+* `github-example-repo/main.tf`
 
 ```hcl
   ec2_qnx_safety = {
@@ -254,26 +259,26 @@ Please refer to QNX documentations above. If you want to learn further advanced 
 
 ## Run CI with AWS developer tools
 
-We will demonstrate how to automate CI processes with EC2 QNX instance using AWS developer tools such as AWS CodeCommit, CodeBuild and CodePipeline.
+We will demonstrate how to automate CI processes with EC2 QNX instance using developer tools such as GitHub, CodeBuild and CodePipeline.
 
 ### Prepare and configure the codes
 
-Run the commands blow in `terraform/` directory to clone the empty CodeCommit repository to your home directory. **Replace `xx` with your 2-digit ID** (e.g. `qnx-on-aws-ws-01-hello-world`).
+Run the commands blow in `terraform/` directory to clone the empty GitHub repository to your home directory. **Replace `xx` with your 2-digit ID** (e.g. `qnx-on-aws-ws-01-hello-world`).
 
 
 ```shell
-REPO_URL=$(terraform output -raw codecommit_repository_url)
-REPO_NAME=$(terraform output -raw codecommit_repository_name)
+REPO_URL=$(terraform output -raw github_repository_url)
+REPO_NAME=$(terraform output -raw github_repository_name)
 cd ~
 git clone ${REPO_URL}
 cd ./${REPO_NAME}
 ```
 
 
-Copy all files in `codecommit-example-repo/` directory of the workshop package to the local repository you cloned.
+Copy all files in `github-example-repo/` directory of the workshop package to the local repository you cloned.
 
 ```shell
-cp -a <WORKSHOP_DIR>/codecommit-example-repo/* ./
+cp -a <WORKSHOP_DIR>/github-example-repo/* ./
 ```
 
 Open `main.tf` in the local repository, then replace the following values in Terraform local values configuration.
@@ -302,7 +307,7 @@ locals {
 
 ### Execute a CI pipeline
 
-Commit and push the changes to CodeCommit repository. Pushing new changes to the repository will trigger the CodePipeline pipeline which initiates CodeBuild project. The project deploys EC2 QNX instances and executes commands defined in `buildspec.yaml`.
+Commit and push the changes to GitHub repository. Pushing new changes to the repository will trigger the CodePipeline pipeline which initiates CodeBuild project. The project deploys EC2 QNX instances and executes commands defined in `buildspec.yaml`.
 
 ```shell
 git add -A

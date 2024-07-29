@@ -1,12 +1,4 @@
 # ------------------------------------------------------------
-# CodeCommit repository
-# ------------------------------------------------------------
-resource "aws_codecommit_repository" "workshop" {
-  repository_name = local.codecommit.repository_name
-  description     = "QNX sample app repository"
-}
-
-# ------------------------------------------------------------
 # CodeBuild project
 # ------------------------------------------------------------
 resource "aws_codebuild_project" "workshop" {
@@ -146,7 +138,6 @@ resource "aws_iam_role" "codebuild" {
   managed_policy_arns = [
     aws_iam_policy.codebuild.arn,
     "arn:aws:iam::aws:policy/AWSCodeBuildAdminAccess",
-    "arn:aws:iam::aws:policy/AWSCodeCommitFullAccess",
     "arn:aws:iam::aws:policy/AmazonEC2FullAccess"
   ]
 }
@@ -299,9 +290,15 @@ resource "aws_s3_bucket_public_access_block" "block" {
 # ------------------------------------------------------------
 # CodePipeline
 # ------------------------------------------------------------
+resource "aws_codestarconnections_connection" "github" {
+  name          = local.name
+  provider_type = "GitHub"
+}
+
 resource "aws_codepipeline" "codepipeline" {
-  name     = local.name
-  role_arn = aws_iam_role.codepipeline.arn
+  name          = local.name
+  role_arn      = aws_iam_role.codepipeline.arn
+  pipeline_type = "V2"
 
   artifact_store {
     location = aws_s3_bucket.codepipeline_bucket.bucket
@@ -319,14 +316,14 @@ resource "aws_codepipeline" "codepipeline" {
       name             = "Source"
       category         = "Source"
       owner            = "AWS"
-      provider         = "CodeCommit"
+      provider         = "CodeStarSourceConnection"
       version          = "1"
       output_artifacts = ["source_output"]
 
       configuration = {
-        RepositoryName       = aws_codecommit_repository.workshop.repository_name
-        BranchName           = "main"
-        PollForSourceChanges = false
+        ConnectionArn    = aws_codestarconnections_connection.github.arn
+        FullRepositoryId = "${var.github_user}/${var.github_repo}"
+        BranchName       = "main"
       }
     }
   }
@@ -397,13 +394,9 @@ resource "aws_iam_policy" "codepipeline" {
       {
         Effect = "Allow"
         Action = [
-          "codecommit:GetBranch",
-          "codecommit:GetCommit",
-          "codecommit:UploadArchive",
-          "codecommit:GetUploadArchiveStatus",
-          "codecommit:CancelUploadArchive"
+          "codestar-connections:UseConnection",
         ]
-        Resource = [aws_codecommit_repository.workshop.arn]
+        Resource = [aws_codestarconnections_connection.github.arn]
       },
       {
         Effect = "Allow"
@@ -422,30 +415,6 @@ resource "aws_iam_policy" "codepipeline" {
       }
     ]
   })
-}
-
-
-resource "aws_cloudwatch_event_rule" "codepipeline" {
-  name        = local.name
-  description = "Amazon CloudWatch Events rule to automatically start your pipeline when a change occurs in the AWS CodeCommit source repository and branch."
-  event_pattern = jsonencode(
-    {
-      "source" : ["aws.codecommit"],
-      "detail-type" : ["CodeCommit Repository State Change"],
-      "resources" : ["${aws_codecommit_repository.workshop.arn}"],
-      "detail" : {
-        "event" : ["referenceCreated", "referenceUpdated"],
-        "referenceType" : ["branch"],
-        "referenceName" : ["main"]
-      }
-    }
-  )
-}
-
-resource "aws_cloudwatch_event_target" "codepipeline" {
-  rule     = aws_cloudwatch_event_rule.codepipeline.name
-  arn      = aws_codepipeline.codepipeline.arn
-  role_arn = aws_iam_role.cwe_codepipeline.arn
 }
 
 # ------------------------------------------------------------

@@ -4,7 +4,7 @@
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "= 5.0.0"
+  version = "= 5.9.0"
 
   name = local.name
   cidr = local.vpc.cidr
@@ -37,7 +37,7 @@ module "vpc" {
 
 module "vpc_endpoints" {
   source  = "terraform-aws-modules/vpc/aws//modules/vpc-endpoints"
-  version = "= 5.0.0"
+  version = "= 5.9.0"
 
   vpc_id = module.vpc.vpc_id
 

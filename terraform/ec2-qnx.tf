@@ -12,7 +12,7 @@ resource "aws_ec2_serial_console_access" "serial_console_access" {
 # Resrouce configuration for EC2 instance for QNX OS for Safety
 module "ec2_instance_qnx_safety" {
   source  = "terraform-aws-modules/ec2-instance/aws"
-  version = "= 5.1.0"
+  version = "= 5.6.1"
 
   name = "${local.name}-qnx_safety"
 
@@ -37,7 +37,7 @@ module "ec2_instance_qnx_safety" {
 
 # module "ec2_instance_qnx_neutrino" {
 #   source  = "terraform-aws-modules/ec2-instance/aws"
-#   version = "= 5.1.0"
+#   version = "= 5.6.1"
 
 #   name = "${local.name}-qnx_neutrino"
 

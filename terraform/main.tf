@@ -2,16 +2,16 @@
 # Terraform and provider versions
 # ------------------------------------------------------------
 terraform {
-  required_version = ">= 1.5.0"
+  required_version = ">= 1.9.3"
 
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "= 5.0"
+      version = "= 5.60.0"
     }
     tls = {
       source  = "hashicorp/tls"
-      version = "= 4.0.4"
+      version = "= 4.0.5"
     }
   }
 }
@@ -71,7 +71,7 @@ locals {
 
   # Parameters for CodeBuild
   codebuild = {
-    tf_version = "1.5.0"
+    tf_version = "1.9.3"
   }
 
   # QNX OS for Safety 2.2.x AMI (https://aws.amazon.com/marketplace/pp/prodview-26pvihq76slfa)

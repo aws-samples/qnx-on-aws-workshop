@@ -40,21 +40,12 @@ locals {
   }
 
   # Parameters for EC2 QNX OS for Safety
-  ec2_qnx_safety = {
-    ami = "${local.ec2_qnx_safety_2_2_x_amis[local.region]}" # Default QNX OS for Safety 2.2.3 AMI
-    # ami                   = "<YOUR_CUSTOM_AMI_ID>"  # Custom QNX OS for Safety AMI
-    instance_type         = "m6g.medium"
+  ec2_qnx = {
+    ami = "${local.ec2_qnx_8_0_amis[local.region]}" # Default QNX OS 8.0 AMI
+    # ami                   = "<YOUR_CUSTOM_AMI_ID>"  # Custom QNX OS 8.0 AMI
+    instance_type         = "c7g.xlarge"
     instance_profile_name = "AmazonSSMRoleForInstancesQuickSetup"
   }
-
-  # Parameters for EC2 QNX Neutrino
-  # Comment out the following code block in case you use QNX Neutrino.
-  # ec2_qnx_neutrino = {
-  #   ami = "${local.ec2_qnx_neutrino_7_1_amis[local.region]}" # Default QNX Neutrino RTOS 7.1 AMI
-  #   # ami                   = "<YOUR_CUSTOM_AMI_ID>"  # Custom Neutrino RTOS AMI
-  #   instance_type         = "m6g.medium"
-  #   instance_profile_name = "AmazonSSMRoleForInstancesQuickSetup"
-  # }
 
   # Parameters for EC2 Ubuntu instance
   ec2_ubuntu = {
@@ -69,28 +60,15 @@ locals {
     tf_version = "1.9.3"
   }
 
-  # QNX OS for Safety 2.2.x AMI (https://aws.amazon.com/marketplace/pp/prodview-26pvihq76slfa)
-  ec2_qnx_safety_2_2_x_amis = {
-    ap-northeast-1 = "ami-09352f59561991aef"
-    ap-northeast-2 = "ami-04330ff60902f1525"
-    ap-northeast-3 = "ami-04b9463581c14e468"
-    ap-southeast-1 = "ami-0afeb3ff59cab9116"
-    eu-centeral-1  = "ami-006851ceb56ab3141"
-    eu-west-1      = "ami-024a7cf21d6096a4b"
-    us-east-1      = "ami-04ae083d500cf2201"
-    us-west-2      = "ami-0f8b7081e08fbac0d"
-  }
-
-  # QNX Neutrino RTOS 7.1 AMI (https://aws.amazon.com/marketplace/pp/prodview-wjqoq2mq7hrhc)
-  ec2_qnx_neutrino_7_1_amis = {
-    ap-northeast-1 = "ami-07b27cce4ff4e52ec"
-    ap-northeast-2 = "ami-0b7d0d03145f7c9f5"
-    ap-northeast-3 = "ami-031d96cdfee759e61"
-    ap-southeast-1 = "ami-0f8d843109d5a98fe"
-    eu-centeral-1  = "ami-02018df98dd15096e"
-    eu-west-1      = "ami-0b5fb49dadf512bf9"
-    us-east-1      = "ami-02bd7b9e243f4d1bc"
-    us-west-2      = "ami-0b6bcbf3a14628bdb"
+  # QNX OS 8.0 AMI (https://aws.amazon.com/marketplace/pp/prodview-fyhziqwvrksrw)
+  ec2_qnx_8_0_amis = {
+    ap-northeast-1 = "ami-00b7185a20e55955a"
+    ap-northeast-2 = "ami-0e887245900c58a3e"
+    ap-southeast-1 = "ami-064f686d4fc7cc50c"
+    eu-centeral-1  = "ami-09335f2437338bca2"
+    eu-west-1      = "ami-0bf4f95decbd708f4"
+    us-east-1      = "ami-01d86b0a4f2e53775"
+    us-west-2      = "ami-0fc8f9aa5fba314be"
   }
 }
 

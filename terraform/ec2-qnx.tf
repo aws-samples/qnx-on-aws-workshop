@@ -32,30 +32,6 @@ module "ec2_instance_qnx_safety" {
   depends_on = [module.vpc.natgw_ids]
 }
 
-# Resrouce configuration for EC2 instance for QNX Neutrino
-# Comment out the following code block in case you use QNX Neutrino.
-
-# module "ec2_instance_qnx_neutrino" {
-#   source  = "terraform-aws-modules/ec2-instance/aws"
-#   version = "= 5.6.1"
-
-#   name = "${local.name}-qnx_neutrino"
-
-#   ami                    = local.ec2_qnx_neutrino["ami"]
-#   instance_type          = local.ec2_qnx_neutrino["instance_type"]
-#   vpc_security_group_ids = [aws_security_group.ec2_qnx.id]
-#   subnet_id              = module.vpc.private_subnets[0]
-#   iam_instance_profile   = aws_iam_instance_profile.ec2_qnx_instance_profile.name
-#   key_name               = aws_key_pair.key_pair.key_name
-#   root_block_device = [{
-#     encrypted = true
-#   }]
-#   metadata_options = {
-#     http_tokens = "required"
-#   }
-
-#   depends_on = [module.vpc.natgw_ids]
-# }
 
 # ------------------------------------------------------------
 # Security group for EC2 QNX instance

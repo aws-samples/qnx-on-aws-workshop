@@ -41,20 +41,12 @@ locals {
   region     = "ap-northeast-1"      # Specify your AWS region
   account_id = data.aws_caller_identity.current.account_id
 
-  # Parameters for EC2 QNX OS for Safety
-  ec2_qnx_safety = {
-    ami                   = "<YOUR_CUSTOM_AMI_ID>" # Custom QNX OS for Safety AMI
-    instance_type         = "m6g.medium"
+  # Parameters for EC2 QNX OS
+  ec2_qnx = {
+    ami                   = "<YOUR_CUSTOM_AMI_ID>" # Custom QNX OS AMI
+    instance_type         = "c7g.xlarge"
     instance_profile_name = "AmazonSSMRoleForInstancesQuickSetup"
   }
-
-  # Parameters for EC2 QNX Neutrino
-  # Comment out the following code block in case you use QNX Neutrino.
-  # ec2_qnx_neutrino = {
-  #   ami                   = "<YOUR_CUSTOM_AMI_ID>" # QNX Neutrino custom RTOS 7.1 AMI
-  #   instance_type         = "m6g.medium"
-  #   instance_profile_name = "AmazonSSMRoleForInstancesQuickSetup"
-  # }
 }
 
 # ------------------------------------------------------------
@@ -108,16 +100,8 @@ variable "instance_count" {
 # Output
 # ------------------------------------------------------------
 
-# Output configuration for EC2 instance for QNX OS for Safety
-output "list_of_ec2_instance_qnx_safety_private_dns" {
-  description = "List of EC2 QNX Safety private dns"
-  value       = module.ec2_instance_qnx_safety[*].private_dns
+# Output configuration for EC2 instance for QNX OS
+output "list_of_ec2_instance_qnx_private_dns" {
+  description = "List of EC2 QNX private dns"
+  value       = module.ec2_instance_qnx[*].private_dns
 }
-
-# Output configuration for EC2 instance for QNX Neutrino
-# Comment out the following code block in case you use QNX Neutrino.
-
-# output "list_of_ec2_instance_qnx_neutrino_private_dns" {
-#   description = "List of EC2 QNX Neutrino purivate dns"
-#   value       = module.ec2_instance_qnx_neutrino.private_dns
-# }

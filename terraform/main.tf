@@ -39,7 +39,7 @@ locals {
     cidr = "10.1.0.0/16" # VPC IPv4 CIDR
   }
 
-  # Parameters for EC2 QNX OS for Safety
+  # Parameters for EC2 QNX OS
   ec2_qnx = {
     ami = "${local.ec2_qnx_8_0_amis[local.region]}" # Default QNX OS 8.0 AMI
     # ami                   = "<YOUR_CUSTOM_AMI_ID>"  # Custom QNX OS 8.0 AMI

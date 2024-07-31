@@ -6,8 +6,14 @@ In the BlackBerry QNX on AWS workshop, you can easily get started with embedded 
 
 In January 2023, BlackBerry Limited [announced the general availability](https://www.blackberry.com/us/en/company/newsroom/press-releases/2023/blackberry-introduces-qnx-accelerate-announces-global-availability-of-blackberry-qnx-rtos-and-qnx-os-for-safety-in-aws-marketplace) of the following QNX Operating Systems on AWS via the AWS Marketplace:
 
-* [QNX® Neutrino® Real Time Operating System (RTOS)](https://aws.amazon.com/marketplace/pp/prodview-wjqoq2mq7hrhc)
-* [QNX® OS for Safety](https://aws.amazon.com/marketplace/pp/prodview-26pvihq76slfa)
+* [QNX® Neutrino® Real Time Operating System (RTOS) 7.1](https://aws.amazon.com/marketplace/pp/prodview-wjqoq2mq7hrhc)
+* [QNX® OS for Safety 2.2.3](https://aws.amazon.com/marketplace/pp/prodview-26pvihq76slfa)
+
+In May 2024, BlackBerry [announced availability](https://www.edaway.com/2024/03/18/qnx-8-0-cloud/) of the following QNX Operating System.
+
+* [QNX OS 8.0](https://aws.amazon.com/marketplace/pp/prodview-fyhziqwvrksrw)
+
+
 
 BlackBerry® QNX® has been widely used to build mission-critical embedded systems across industries such as automotive, robotics, aerospace, avionics, energy and medical.
 
@@ -50,7 +56,7 @@ qnx-on-aws-workshop/
 ├── INSTRUCTIONS.md
 ├── LICENSE
 ├── README.md
-├── github-example-repo/            # CodeBuild files stored in GitHub repository
+├── github-example-repo/                # CodeBuild files stored in GitHub repository
 │   ├── app/
 │   │   └── run_command.sh              # Sample CI application
 │   ├── arguments.txt                   # List of arguments passed to CI application
@@ -97,7 +103,6 @@ The workshop is designed to run in the following AWS regions.
 | :----------------------- | :--------------- |
 | Asia Pacific (Tokyo)     | `ap-northeast-1` |
 | Asia Pacific (Seoul)     | `ap-northeast-2` |
-| Asia Pacific (Osaka)     | `ap-northeast-3` |
 | Asia Pacific (Singapore) | `ap-southeast-1` |
 | Europe (Frankfurt)       | `eu-central-1`   |
 | Europe (Ireland)         | `eu-west-1`      |
@@ -115,20 +120,20 @@ The followings are used in the client PC environment.
 * Remote Desktop client
 * AWS CLI version 2
 * AWS CLI Session Manager plugin
-* Terraform version 1.5.0 or higher
+* Terraform version 1.9.3 or higher
 
 ### QNX software
 
 #### myQNX account and QNX product evaluation license
 
-For the workshop, participants need to register [myQNX](https://blackberry.qnx.com/en) account. Please register your account and request the evaluation license for QNX SDP 7.1 before the workshop. As it may take some time to get a license, please request the license in advance. Refer to the following links to register myQNX account and request the evaluation license.
+For the workshop, participants need to register [myQNX](https://blackberry.qnx.com/en) account. Please register your account and request the evaluation license for QNX SDP 8.0 before the workshop. As it may take some time to get a license, please request the license in advance. Refer to the following links to register myQNX account and request the evaluation license.
 
 * [Register myQNX account](https://www.qnx.com/account/login.html?logout=1#showcreate)
 * [Request evaluation license](https://www.qnx.com/products/evaluation/)
 
 In the workshop, we will use the following QNX products with an evaluation license.
 
-* QNX® Software Development Platform (SDP) 7.1
+* QNX® Software Development Platform (SDP) 8.0
 * QNX® Momentics® Integrated Development Environment (IDE)
 * QNX® Software Center
 
@@ -136,7 +141,7 @@ In the workshop, we will use the following QNX products with an evaluation licen
 
 In the workshop, we will use the following QNX product with AWS Marketplace subscription.
 
-* QNX® OS for Safety 2.2.3
+* QNX® OS 8.0
 
 ### GitHub repository
 
@@ -156,7 +161,18 @@ See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more inform
 
 This library is licensed under the MIT-0 License. See the [LICENSE](LICENSE) file.
 
+
 ## References
+
+### QNX 8.x
+
+* [AWS Marketplace: QNX OS 8.0](https://aws.amazon.com/marketplace/pp/prodview-fyhziqwvrksrw)
+* [QNX Amazon Machine Image Technotes](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.qnxcloud.ami/topic/about_ami.html)
+* [QNX Momentics IDE User's Guide](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.ide.userguide/topic/about.html)
+* [QNX® Software Development Platform 8.0](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.qnxsdp.nav/topic/bookset.html)
+
+
+### QNX 7.x
 
 * [AWS Marketplace - QNX Neutrino RTOS 7.1](https://aws.amazon.com/marketplace/pp/prodview-wjqoq2mq7hrhc)
 * [AWS Marketplace - QNX OS for Safety 2.2.3](https://aws.amazon.com/marketplace/pp/prodview-26pvihq76slfa)
@@ -170,5 +186,3 @@ This library is licensed under the MIT-0 License. See the [LICENSE](LICENSE) fil
 * [QNX Momentics IDE User's Guide](https://www.qnx.com/developers/docs/7.1/#com.qnx.doc.ide.userguide/topic/about.html)
 * [QNX Software Development Platform](https://www.qnx.com/developers/docs/7.1/#com.qnx.doc.qnxsdp.nav/topic/bookset.html)
 * [QNX Training | Embedded Development and Product Training | BlackBerry QNX](https://blackberry.qnx.com/en/services/training)
-* [Installing or updating the latest version of the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
-* [Install Terraform | Terraform | HashiCorp Developer](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)

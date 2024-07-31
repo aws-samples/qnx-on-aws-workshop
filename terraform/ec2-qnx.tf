@@ -9,15 +9,15 @@ resource "aws_ec2_serial_console_access" "serial_console_access" {
 # EC2 QNX instances
 # ------------------------------------------------------------
 
-# Resrouce configuration for EC2 instance for QNX OS for Safety
-module "ec2_instance_qnx_safety" {
+# Resrouce configuration for EC2 instance for QNX OS
+module "ec2_instance_qnx" {
   source  = "terraform-aws-modules/ec2-instance/aws"
   version = "= 5.6.1"
 
-  name = "${local.name}-qnx_safety"
+  name = "${local.name}-qnx"
 
-  ami                    = local.ec2_qnx_safety["ami"]
-  instance_type          = local.ec2_qnx_safety["instance_type"]
+  ami                    = local.ec2_qnx["ami"]
+  instance_type          = local.ec2_qnx["instance_type"]
   vpc_security_group_ids = [aws_security_group.ec2_qnx.id]
   subnet_id              = module.vpc.private_subnets[0]
   iam_instance_profile   = aws_iam_instance_profile.ec2_qnx_instance_profile.name

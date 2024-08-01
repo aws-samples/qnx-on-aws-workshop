@@ -3,7 +3,7 @@
 # ------------------------------------------------------------
 module "ec2_instance_ubuntu" {
   source  = "terraform-aws-modules/ec2-instance/aws"
-  version = "= 5.1.0"
+  version = "= 5.6.1"
 
   name = "${local.name}-ubuntu"
 

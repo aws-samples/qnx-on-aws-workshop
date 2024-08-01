@@ -5,7 +5,7 @@
 # Resrouce configuration for EC2 instance for QNX OS for Safety
 module "ec2_instance_qnx_safety" {
   source  = "terraform-aws-modules/ec2-instance/aws"
-  version = "= 5.1.0"
+  version = "= 5.6.1"
 
   count = var.instance_count
 
@@ -36,7 +36,7 @@ module "ec2_instance_qnx_safety" {
 
 # module "ec2_instance_qnx_neutrino" {
 #   source  = "terraform-aws-modules/ec2-instance/aws"
-#   version = "= 5.1.0"
+#   version = "= 5.6.1"
 
 #   name                   = "${local.name}-qnx_neutrino-${format("%02d", count.index + 1)}"
 #   ami                    = local.ec2_qnx_neutrino["ami"]

@@ -30,7 +30,7 @@ resource "aws_codebuild_project" "workshop" {
     }
     environment_variable {
       name  = "QNX_HOST"
-      value = module.ec2_instance_qnx_safety.private_dns
+      value = module.ec2_instance_qnx.private_dns
       type  = "PLAINTEXT"
     }
     environment_variable {

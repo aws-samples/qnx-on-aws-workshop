@@ -45,7 +45,7 @@ phases:
       - echo "${SSH_PRIVATE_KEY}" | ssh-add -
 
       # Create list of hosts and args
-      - terraform output -json list_of_ec2_instance_qnx_safety_private_dns | jq -r '.[]' > "${LIST_OF_INSTANCES}"
+      - terraform output -json list_of_ec2_instance_qnx_private_dns | jq -r '.[]' > "${LIST_OF_INSTANCES}"
       - paste -d, ${LIST_OF_INSTANCES} ${ARGS} > "${INSTS_ARGS}"
 
       # Copy application to target hosts

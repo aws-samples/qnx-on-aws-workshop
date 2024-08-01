@@ -2,16 +2,16 @@
 # EC2 QNX instances
 # ------------------------------------------------------------
 
-# Resrouce configuration for EC2 instance for QNX OS for Safety
-module "ec2_instance_qnx_safety" {
+# Resrouce configuration for EC2 instance for QNX OS
+module "ec2_instance_qnx" {
   source  = "terraform-aws-modules/ec2-instance/aws"
   version = "= 5.6.1"
 
   count = var.instance_count
 
-  name                   = "${local.name}-qnx_safety-${format("%02d", count.index + 1)}"
-  ami                    = local.ec2_qnx_safety["ami"]
-  instance_type          = local.ec2_qnx_safety["instance_type"]
+  name                   = "${local.name}-qnx-${format("%02d", count.index + 1)}"
+  ami                    = local.ec2_qnx["ami"]
+  instance_type          = local.ec2_qnx["instance_type"]
   vpc_security_group_ids = [aws_security_group.ec2_qnx.id]
   subnet_id              = var.private_subnet_id
   iam_instance_profile   = aws_iam_instance_profile.ec2_qnx_instance_profile.name
@@ -30,35 +30,6 @@ module "ec2_instance_qnx_safety" {
     qconn
     EOF
 }
-
-# Resrouce configuration for EC2 instance for QNX Neutrino
-# Comment out the following code block in case you use QNX Neutrino.
-
-# module "ec2_instance_qnx_neutrino" {
-#   source  = "terraform-aws-modules/ec2-instance/aws"
-#   version = "= 5.6.1"
-
-#   name                   = "${local.name}-qnx_neutrino-${format("%02d", count.index + 1)}"
-#   ami                    = local.ec2_qnx_neutrino["ami"]
-#   instance_type          = local.ec2_qnx_neutrino["instance_type"]
-#   vpc_security_group_ids = [aws_security_group.ec2_qnx.id]
-#   subnet_id              = var.private_subnet_id
-#   iam_instance_profile   = aws_iam_instance_profile.ec2_qnx_instance_profile.name
-#   key_name               = var.key_pair_name
-#   root_block_device = [{
-#     encrypted = true
-#   }]
-#   metadata_options = {
-#     http_tokens = "required"
-#   }
-
-#   user_data              = <<EOF
-#     #!/bin/sh
-
-#     # qconn daemon
-#     qconn
-#     EOF
-# }
 
 # ------------------------------------------------------------
 # Security group for EC2 QNX instance

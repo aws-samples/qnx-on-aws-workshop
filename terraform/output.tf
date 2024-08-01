@@ -14,37 +14,20 @@ output "ec2_instance_ubuntu_instance_id" {
   value       = module.ec2_instance_ubuntu.id
 }
 
-output "ec2_instance_qnx_safety_instance_id" {
-  description = "QNX Safety instance ID"
-  value       = module.ec2_instance_qnx_safety.id
+output "ec2_instance_qnx_instance_id" {
+  description = "QNX instance ID"
+  value       = module.ec2_instance_qnx.id
 }
 
-output "ec2_instance_qnx_safety_private_dns" {
-  description = "QNX Safety private DNS name"
-  value       = module.ec2_instance_qnx_safety.private_dns
+output "ec2_instance_qnx_private_dns" {
+  description = "QNX private DNS name"
+  value       = module.ec2_instance_qnx.private_dns
 }
 
-output "ec2_instance_qnx_safety_private_ip" {
-  description = "QNX Safety private IP address"
-  value       = module.ec2_instance_qnx_safety.private_ip
+output "ec2_instance_qnx_private_ip" {
+  description = "QNX private IP address"
+  value       = module.ec2_instance_qnx.private_ip
 }
-
-# Comment out the following code block in case you use QNX Neutrino.
-
-# output "ec2_instance_qnx_neutrino_instance_id" {
-#   description = "QNX Neutrino instance ID"
-#   value       = module.ec2_instance_qnx_neutrino.id
-# }
-
-# output "ec2_instance_qnx_neutrino_private_dns" {
-#   description = "QNX Neutrino private DNS name"
-#   value       = module.ec2_instance_qnx_neutrino.private_dns
-# }
-
-# output "ec2_instance_qnx_neutrino_private_ip" {
-#   description = "QNX Neutrino private IP address"
-#   value       = module.ec2_instance_qnx_neutrino.private_ip
-# }
 
 output "github_repository_url" {
   description = "GitHub repository URL"

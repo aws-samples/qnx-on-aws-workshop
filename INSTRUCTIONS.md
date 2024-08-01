@@ -14,7 +14,7 @@ Please make sure you have the following information before working on the worksh
     * AWS region
 * BlackBerry QNX
     * myQNX Account, Password
-    * Evaluation license reference serial number of QNX SDP 7.x
+    * Evaluation license reference serial number of QNX SDP 8.x
 * GitHub
     * GitHub user
     * GitHub repository
@@ -31,14 +31,14 @@ Follow the instruction below to install each software.
 
 * AWS CLI version 2: [Installing or updating the latest version of the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
 * AWS CLI Session Manager plugin: [Install the Session Manager plugin for the AWS CLI](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html)
-* Terraform version 1.5.0 or higher: [Install Terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)
+* Terraform version 1.9.3 or higher: [Install Terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)
 
 
 ### Prepare QNX software
 
 QNX AMIs are provided as third party software in AWS Marketplace. Users can use the software on their AWS infrastructure through subscription.
 
-Log in to AWS Management Console as a user with the administrative permissions, and then subscribe to [AWS Marketplace: QNX OS for Safety 2.2.3](https://aws.amazon.com/marketplace/pp/prodview-26pvihq76slfa) in AWS Marketplace. The page provides the product overview, pricing, usage information, and support information etc. Read the Terms and Conditions, and accept if you agree to proceed.
+Log in to AWS Management Console as a user with the administrative permissions, and then subscribe to [AWS Marketplace: QNX OS 8.0](https://aws.amazon.com/marketplace/pp/prodview-fyhziqwvrksrw) in AWS Marketplace. The page provides the product overview, pricing, usage information, and support information etc. Read the Terms and Conditions, and accept if you agree to proceed.
 
 
 ## Configure and deploy the environment
@@ -81,16 +81,16 @@ cp terraform/terraform.tfvars.template terraform/terraform.tfvars
 Update configurations in `terraform/terraform.tfvars`.
 
 ```shell
-ubuntu_user_password         = "<your_password>"          # Ubuntu 'ubuntu' user password
-github_user                  = "<github_user>"            # GitHub user name for CI/CD
-github_repo                  = "<github_repo>"            # GitHub repository name for CI/CD
+ubuntu_user_password = "<YOUR_PASSWORD>" # Ubuntu 'ubuntu' user password
+github_user          = "<GITHUB_USER>"   # GitHub user name for CI/CD
+github_repo          = "<GITHUB_REPO>"   # GitHub repository name for CI/CD
 ```
 
 Open `terraform/main.tf` file, then replace the following values in Terraform local values configuration.
 * Replace `xx` in the `name`'s value with 2-digit ID (e.g. `qnx-on-aws-ws-01`)
 * Replace AWS region code you use
 
-```hcl
+```yaml
 # ------------------------------------------------------------
 # Local values
 # ------------------------------------------------------------
@@ -129,7 +129,7 @@ Choose **EC2 serial console** tab in the following screen, then click **Connect*
 
 Press Enter key and type `password`, then the initial password setup prompt will be displayed. Then you can set the default login passwords for `root` user and `qnxuser` user, respectively.
 
-<img src="image/set-password-qnx-os.png" width="500" alt="Set passwords QNX Safety">
+<img src="image/set-password-qnx-os.png" width="500" alt="Set passwords QNX OS">
 
 
 Log in as `root` user, then run the command below to configure `qconn` daemon auto-start at QNX OS launch.
@@ -146,24 +146,24 @@ echo qconn >> /var/start_script.sh
 
 | :exclamation: Important |
 |:---------------------------|
-| QNX SDP uses qconn daemon to allow access to QNX OS. It is important that the security group of EC2 QNX instance has port 8000 open as Custom TCP allowing access for the development host to connect. With qconn, a user can log in to QNX OS without authentication and can gain access to files on QNX OS. To protect QNX OS environment, we strongly recommend to deny all accesses except from limited development hosts using security group and Network ACL. In the workshop, the access to qconn is only allowed from EC2 Ubuntu instance. See [qconn](http://www.qnx.com/developers/docs/7.0.0/index.html#com.qnx.doc.neutrino.utilities/topic/q/qconn.html) for further details of qconn daemon.|
+| QNX SDP uses qconn daemon to allow access to QNX OS. It is important that the security group of EC2 QNX instance has port 8000 open as Custom TCP allowing access for the development host to connect. With qconn, a user can log in to QNX OS without authentication and can gain access to files on QNX OS. To protect QNX OS environment, we strongly recommend to deny all accesses except from limited development hosts using security group and Network ACL. In the workshop, the access to qconn is only allowed from EC2 Ubuntu instance. See [qconn](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.utilities/topic/q/qconn.html) for further details of qconn daemon.|
 
 
 ### Create a custom QNX AMI
 
-Run following commands to create custom QNX AMI. Replace `xx` with your 2-digit ID (e.g. `qnx-safety-custom-01`). 
+Run following commands to create custom QNX AMI. Replace `xx` with your 2-digit ID (e.g. `qnx-custom-01`). 
 
 ```shell
-AMI_NAME="qnx-safety-custom-xx"
-INSTANCE_ID=$(terraform output -raw ec2_instance_qnx_safety_instance_id)
+AMI_NAME="qnx-custom-xx"
+INSTANCE_ID=$(terraform output -raw ec2_instance_qnx_instance_id)
 aws ec2 create-image --instance-id ${INSTANCE_ID} --name ${AMI_NAME} --tag-specifications "ResourceType=image,Tags=[{Key=Name,Value=${AMI_NAME}}]"
 ```
 
 Example output:
 
 ```shell
-$ AMI_NAME="qnx-safety-custom"
-$ INSTANCE_ID=$(terraform output -raw ec2_instance_qnx_safety_instance_id)
+$ AMI_NAME="qnx-custom"
+$ INSTANCE_ID=$(terraform output -raw ec2_instance_qnx_instance_id)
 $ aws ec2 create-image --instance-id ${INSTANCE_ID} --name ${AMI_NAME} --tag-specifications "ResourceType=image,Tags=[{Key=Name,Value=${AMI_NAME}}]"
 {
     "ImageId": "ami-04f6f6c2a180cd137"
@@ -172,7 +172,7 @@ $ aws ec2 create-image --instance-id ${INSTANCE_ID} --name ${AMI_NAME} --tag-spe
 
 Run `aws ec2 describe-images` command to check the progress of creating AMI. Replace AMI ID with your new AMI ID shown above, then run the following command. If `State` is `available`, the creation of your custom QNX AMI is completed.
 
-```
+```shell
 $ aws ec2 describe-images --image-ids ami-04f6f6c2a180cd137
 {
     "Images": [
@@ -180,7 +180,7 @@ $ aws ec2 describe-images --image-ids ami-04f6f6c2a180cd137
             "Architecture": "arm64",
             "CreationDate": "2023-03-25T11:50:25.000Z",
             "ImageId": "ami-04f6f6c2a180cd137",
-            "ImageLocation": "123456789012/qnx-safety-custom",
+            "ImageLocation": "123456789012/qnx-custom",
             "ImageType": "machine",
             "Public": false,
             "OwnerId": "123456789012",
@@ -188,7 +188,7 @@ $ aws ec2 describe-images --image-ids ami-04f6f6c2a180cd137
             "UsageOperation": "RunInstances",
             "ProductCodes": [
                 {
-                    "ProductCodeId": "2oe9ogrqr69u5mzyjhb34q2eo",
+                    "ProductCodeId": "1243xbs6brm8b7j5r3nfbm9n4",
                     "ProductCodeType": "marketplace"
                 }
             ],
@@ -206,11 +206,12 @@ Comment out the existing AMI ID configuration and replace it with the newly crea
 * `terraform/main.tf`
 * `github-example-repo/main.tf`
 
-```hcl
-  ec2_qnx_safety = {
-    # ami                   = "${local.ec2_qnx_safety_2_2_x_amis[local.region]}" # Default QNX OS for Safety 2.2.3 AMI
-    ami                   = "<YOUR_CUSTOM_AMI_ID>"  # Custom QNX OS for Safety AMI
-    instance_type         = "m6g.medium"
+```yaml
+  # Parameters for EC2 QNX OS
+  ec2_qnx = {
+    ami = "${local.ec2_qnx_8_0_amis[local.region]}" # Default QNX OS
+    # ami                   = "<YOUR_CUSTOM_AMI_ID>"  # Custom QNX OS
+    instance_type         = "c7g.xlarge"
     instance_profile_name = "AmazonSSMRoleForInstancesQuickSetup"
   }
 ```
@@ -249,8 +250,8 @@ We install and use QNX software on the development host.
 ### Install QNX Software
 
 * [QNX Software Center 2.0](http://www.qnx.com/download/group.html?programid=29178)
-* [QNX Software Development Platform 7.1](https://www.qnx.com/developers/docs/7.1/#com.qnx.doc.qnxsdp.nav/topic/bookset.html)
-* [QNX Momentics IDE](https://www.qnx.com/developers/docs/7.1/#com.qnx.doc.ide.userguide/topic/about.html)
+* [QNX® Software Development Platform 8.0](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.qnxsdp.nav/topic/bookset.html)
+* [QNX Momentics IDE User's Guide](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.ide.userguide/topic/about.html)
 
 ### Develop with QNX SDP
 
@@ -302,7 +303,7 @@ Open `main.tf` in the local repository, then replace the following values in Ter
 * `ami`: Make sure the value is replaced with your customer QNX AMI ID.
 
 
-```hcl
+```yaml
 # ------------------------------------------------------------
 # Local values
 # ------------------------------------------------------------
@@ -311,10 +312,10 @@ locals {
   region     = "<YOUR_AWS_REGION>"        # Specify your AWS region
   account_id = data.aws_caller_identity.current.account_id
 
-  # Parameters for EC2 QNX OS for Safety
-  ec2_qnx_safety = {
-    ami                   = "<YOUR_CUSTOM_AMI_ID>" # Custom QNX OS for Safety AMI
-    instance_type         = "m6g.medium"
+  # Parameters for EC2 QNX OS
+  ec2_qnx = {
+    ami                   = "<YOUR_CUSTOM_AMI_ID>" # Custom QNX OS AMI
+    instance_type         = "c7g.xlarge"
     instance_profile_name = "AmazonSSMRoleForInstancesQuickSetup"
   }
 ```

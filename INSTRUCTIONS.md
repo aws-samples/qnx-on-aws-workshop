@@ -261,7 +261,22 @@ Please refer to QNX documentations above. If you want to learn further advanced 
 
 We will demonstrate how to automate CI processes with EC2 QNX instance using developer tools such as GitHub, CodeBuild and CodePipeline.
 
-### Prepare and configure the codes
+
+### Update a connection to GitHub
+
+To allow AWS CodePipeline to connect to a GitHub repository, we need to manually update a connection. This can be done by installing AWS Connector for GitHub in your GitHub account.
+
+
+Navigate **Settings** > **Connections** in Developer Tools console. Choose the connection you deployed as a part of terraform deployment (e.g. `qnx-on-aws-ws-xx`), then click **Update pending connection**.
+
+![Setup connection](image/setup-connection-1.png)
+
+In the next screen, click **Install a new app**, then you are redirected to a GitHub page. Then, follow the relevant steps in [Create a connection to GitHub](https://docs.aws.amazon.com/dtconsole/latest/userguide/connections-create-github.html#connections-create-github-console) so that you can configure the connection to GitHub repository. When successfully updated, you'll see connection's status to be `Available`.
+
+
+
+
+### Prepare and configure the code
 
 Run the commands blow in `terraform/` directory to clone the empty GitHub repository to your home directory. **Replace `xx` with your 2-digit ID** (e.g. `qnx-on-aws-ws-01-hello-world`).
 

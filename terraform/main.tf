@@ -60,15 +60,16 @@ locals {
     tf_version = "1.9.3"
   }
 
-  # QNX OS 8.0 AMI (https://aws.amazon.com/marketplace/pp/prodview-fyhziqwvrksrw)
+  # QNX OS 8.0.2 AMI mapping
+  # (https://aws.amazon.com/marketplace/pp/prodview-fyhziqwvrksrw)
   ec2_qnx_8_0_amis = {
-    ap-northeast-1 = "ami-00b7185a20e55955a"
-    ap-northeast-2 = "ami-0e887245900c58a3e"
-    ap-southeast-1 = "ami-064f686d4fc7cc50c"
-    eu-centeral-1  = "ami-09335f2437338bca2"
-    eu-west-1      = "ami-0bf4f95decbd708f4"
-    us-east-1      = "ami-01d86b0a4f2e53775"
-    us-west-2      = "ami-0fc8f9aa5fba314be"
+    ap-northeast-1 = "ami-00d87a0d18aed9c04"
+    ap-northeast-2 = "ami-0552ae8b891aad54a"
+    ap-southeast-1 = "ami-03909bede4707f162"
+    eu-centeral-1  = "ami-0aba071c35966df3a"
+    eu-west-1      = "ami-09fc3726b8fdb44aa"
+    us-east-1      = "ami-0d07d4120bfb8ef3d"
+    us-west-2      = "ami-0095b80a82406356a"
   }
 }
 

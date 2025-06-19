@@ -2,14 +2,14 @@
 # EC2 QNX instances
 # ------------------------------------------------------------
 
-# Resrouce configuration for EC2 instance for QNX OS
+# Resource configuration for EC2 instance for QNX OS
 module "ec2_instance_qnx" {
   source  = "terraform-aws-modules/ec2-instance/aws"
   version = "= 5.6.1"
 
   count = var.instance_count
 
-  name                   = "${local.name}-qnx-${format("%02d", count.index + 1)}"
+  name                   = "${var.project_name}-qnx-${format("%02d", count.index + 1)}"
   ami                    = local.ec2_qnx["ami"]
   instance_type          = local.ec2_qnx["instance_type"]
   vpc_security_group_ids = [aws_security_group.ec2_qnx.id]
@@ -35,8 +35,8 @@ module "ec2_instance_qnx" {
 # Security group for EC2 QNX instance
 # ------------------------------------------------------------
 resource "aws_security_group" "ec2_qnx" {
-  name_prefix = "${local.name}-pipeline-ec2-"
-  description = "EC2 SG for ${local.name}"
+  name_prefix = "${var.project_name}-pipeline-ec2-"
+  description = "EC2 SG for ${var.project_name}"
   vpc_id      = var.vpc_id
 
   ingress {
@@ -69,7 +69,7 @@ resource "aws_security_group" "ec2_qnx" {
 # IAM role for EC2 QNX instance
 # ------------------------------------------------------------
 resource "aws_iam_role" "ec2_qnx" {
-  name_prefix = "${local.name}-ec2-qnx-role-"
+  name_prefix = "${var.project_name}-ec2-qnx-role-"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -86,5 +86,6 @@ resource "aws_iam_role" "ec2_qnx" {
 }
 
 resource "aws_iam_instance_profile" "ec2_qnx_instance_profile" {
-  role = aws_iam_role.ec2_qnx.name
+  name_prefix = "${var.project_name}-ec2-qnx-"
+  role        = aws_iam_role.ec2_qnx.name
 }

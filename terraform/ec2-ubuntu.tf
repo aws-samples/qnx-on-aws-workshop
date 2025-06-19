@@ -5,7 +5,7 @@ module "ec2_instance_ubuntu" {
   source  = "terraform-aws-modules/ec2-instance/aws"
   version = "= 5.6.1"
 
-  name = "${local.name}-ubuntu"
+  name = "${var.project_name}-ubuntu"
 
   ami                    = local.ec2_ubuntu["ami"]
   instance_type          = local.ec2_ubuntu["instance_type"]
@@ -22,7 +22,7 @@ module "ec2_instance_ubuntu" {
   }
 
   user_data = base64encode(templatefile("script/user_data_script_ubuntu.sh", {
-    aws_region             = local.region
+    aws_region             = var.aws_region
     ubuntu_password_secret = aws_secretsmanager_secret.ubuntu_password.id
     private_key_secret     = aws_secretsmanager_secret.private_key.id
   }))
@@ -37,8 +37,8 @@ module "ec2_instance_ubuntu" {
 # Security group for EC2 Ubuntu instance
 # ------------------------------------------------------------
 resource "aws_security_group" "ec2_ubuntu" {
-  name_prefix = "${local.name}-ubuntu-"
-  description = "EC2 Ubuntu instance SG for ${local.name}"
+  name_prefix = "${var.project_name}-ubuntu-"
+  description = "EC2 Ubuntu instance SG for ${var.project_name}"
   vpc_id      = module.vpc.vpc_id
 
   egress {
@@ -54,7 +54,7 @@ resource "aws_security_group" "ec2_ubuntu" {
 # IAM role for EC2 Ubuntu instance
 # ------------------------------------------------------------
 resource "aws_iam_role" "ec2_ubuntu_role" {
-  name_prefix = "${local.name}-ec2-ubuntu-role-"
+  name_prefix = "${var.project_name}-ec2-ubuntu-role-"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -68,15 +68,25 @@ resource "aws_iam_role" "ec2_ubuntu_role" {
       },
     ]
   })
-  managed_policy_arns = [
-    "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
-    "arn:aws:iam::aws:policy/AmazonSSMPatchAssociation",
-    aws_iam_policy.ec2_ubuntu.arn
-  ]
+}
+
+resource "aws_iam_role_policy_attachment" "ec2_ubuntu_custom_policy" {
+  role       = aws_iam_role.ec2_ubuntu_role.name
+  policy_arn = aws_iam_policy.ec2_ubuntu.arn
+}
+
+resource "aws_iam_role_policy_attachment" "ec2_ubuntu_ssm_managed_instance_core" {
+  role       = aws_iam_role.ec2_ubuntu_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
+resource "aws_iam_role_policy_attachment" "ec2_ubuntu_ssm_patch_association" {
+  role       = aws_iam_role.ec2_ubuntu_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMPatchAssociation"
 }
 
 resource "aws_iam_policy" "ec2_ubuntu" {
-  name_prefix = "${local.name}-ec2-ubuntu-"
+  name_prefix = "${var.project_name}-ec2-ubuntu-"
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -87,8 +97,8 @@ resource "aws_iam_policy" "ec2_ubuntu" {
           "ssm:SendCommand"
         ],
         Resource = [
-          "arn:aws:ec2:${local.region}:${local.account_id}:instance/*",
-          "arn:aws:ssm:${local.region}:${local.account_id}:document/SSM-SessionManagerRunShell"
+          "arn:aws:ec2:${var.aws_region}:${local.account_id}:instance/*",
+          "arn:aws:ssm:${var.aws_region}:${local.account_id}:document/SSM-SessionManagerRunShell"
         ],
         Condition = {
           BoolIfExists = {
@@ -114,7 +124,7 @@ resource "aws_iam_policy" "ec2_ubuntu" {
           "ec2:DescribeInstances"
         ],
         "Resource" : [
-          "arn:aws:ec2:${local.region}:${local.account_id}:instance/*"
+          "arn:aws:ec2:${var.aws_region}:${local.account_id}:instance/*"
         ]
       },
       {
@@ -136,7 +146,7 @@ resource "aws_iam_policy" "ec2_ubuntu" {
           "kms:DescribeKey",
           "kms:CreateGrant",
         ],
-        Resource = aws_kms_key.workshop.arn
+        Resource = aws_kms_key.kms_key.arn
       },
       {
         Effect = "Allow",

@@ -8,7 +8,7 @@ env:
     ARGS: "arguments.txt"
     INSTS_ARGS: "insts_args.txt"
 
-phases:
+    phases:
   install:
     commands:
       # Install Terraform command
@@ -28,12 +28,15 @@ phases:
         -backend-config="region=${AWS_REGION}"
 
       - terraform apply 
+        -var "aws_region=${AWS_REGION}"
+        -var "project_name=${BUILD_PROJECT_NAME}"
+        -var "qnx_custom_ami_id=${QNX_CUSTOM_AMI_ID}"
+        -var "instance_count=${INSTANCE_COUNT}"
         -var "vpc_id=${VPC_ID}"
         -var "private_subnet_id=${PRIVATE_SUBNET_ID}"
         -var "vpc_cidr_block=${VPC_CIDR_BLOCK}"
         -var "key_pair_name=${KEY_PAIR_NAME}"
         -var "kms_key_id=${KMS_KEY_ID}"
-        -var "instance_count=${INSTANCE_COUNT}"
         -auto-approve
         -compact-warnings > /dev/null
 
@@ -62,11 +65,14 @@ phases:
     finally:
       # Terraform destroy
       - terraform destroy
+        -var "aws_region=${AWS_REGION}"
+        -var "project_name=${BUILD_PROJECT_NAME}"
+        -var "qnx_custom_ami_id=${QNX_CUSTOM_AMI_ID}"
+        -var "instance_count=${INSTANCE_COUNT}"
         -var "vpc_id=${VPC_ID}"
         -var "private_subnet_id=${PRIVATE_SUBNET_ID}"
         -var "vpc_cidr_block=${VPC_CIDR_BLOCK}"
         -var "key_pair_name=${KEY_PAIR_NAME}"
         -var "kms_key_id=${KMS_KEY_ID}"
-        -var "instance_count=${INSTANCE_COUNT}"
         -auto-approve
         -compact-warnings

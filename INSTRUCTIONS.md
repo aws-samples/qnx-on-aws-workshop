@@ -1,4 +1,27 @@
-# Instructions
+# Instructions <!-- omit in toc -->
+
+- [Prepare workshop environment](#prepare-workshop-environment)
+  - [Prepare information used in the workshop](#prepare-information-used-in-the-workshop)
+  - [Install prerequisite software](#install-prerequisite-software)
+  - [Prepare QNX software](#prepare-qnx-software)
+- [Configure and deploy the environment](#configure-and-deploy-the-environment)
+  - [Log in to an AWS account](#log-in-to-an-aws-account)
+  - [Clone Git repository](#clone-git-repository)
+  - [Configure the environment](#configure-the-environment)
+  - [Deploy the environment](#deploy-the-environment)
+- [Create custom QNX AMI](#create-custom-qnx-ami)
+  - [Configure a custom QNX AMI](#configure-a-custom-qnx-ami)
+  - [Create a custom QNX AMI](#create-a-custom-qnx-ami)
+  - [Deploy a new EC2 QNX instance](#deploy-a-new-ec2-qnx-instance)
+- [Log in to EC2 development host using Remote Desktop client](#log-in-to-ec2-development-host-using-remote-desktop-client)
+- [Install and develop with QNX SDP](#install-and-develop-with-qnx-sdp)
+  - [Install QNX Software](#install-qnx-software)
+  - [Develop with QNX SDP](#develop-with-qnx-sdp)
+- [Run CI with AWS developer tools](#run-ci-with-aws-developer-tools)
+  - [Update a connection to GitHub](#update-a-connection-to-github)
+  - [Prepare and configure the code](#prepare-and-configure-the-code)
+  - [Execute a CI pipeline](#execute-a-ci-pipeline)
+
 
 ## Prepare workshop environment
 
@@ -78,25 +101,61 @@ Copy `terraform/terraform.tfvars.template` file to `terraform/terraform.tfvars`.
 cp terraform/terraform.tfvars.template terraform/terraform.tfvars
 ```
 
-Update configurations in `terraform/terraform.tfvars`.
+Update configurations in `terraform/terraform.tfvars`. The template file contains all available configuration options with descriptions and examples.
+
+**Required variables** that must be configured:
 
 ```shell
-ubuntu_user_password = "<YOUR_PASSWORD>" # Ubuntu 'ubuntu' user password
-github_user          = "<GITHUB_USER>"   # GitHub user name for CI/CD
-github_repo          = "<GITHUB_REPO>"   # GitHub repository name for CI/CD
+# =============================================================================
+# REQUIRED CONFIGURATION
+# =============================================================================
+
+# Project identifier - used for naming all AWS resources
+# Must be unique and 1-20 characters (letters, numbers, hyphens only)
+project_name = "qnx-on-aws-ws-xx"  # Replace `xx` with your 2-digit ID (e.g., "01", "02")
+
+# AWS region where all resources will be created
+# Choose a region that supports ARM instances (c7g/c8g family)
+aws_region = "ap-northeast-1"  # Examples: us-east-1, us-west-2, eu-west-1, ap-northeast-1
+
+# Password for Ubuntu 'ubuntu' user (minimum 8 characters)
+# Will be stored securely in AWS Secrets Manager
+ubuntu_user_password = "YourStrongPassword123!"
+
+# GitHub configuration for CI/CD pipeline
+github_user = "your-github-username"    # Your GitHub username
+github_repo = "your-repository-name"    # Repository containing workshop code
+
+# CodeBuild project name for CI/CD pipeline
+build_project_name = "qnx-on-aws-ws-pl-xx"  # Replace `xx` with same ID as project_name
 ```
 
-Open `terraform/main.tf` file, then replace the following values in Terraform local values configuration.
-* Replace `xx` in the `name`'s value with 2-digit ID (e.g. `qnx-on-aws-ws-01`)
-* Replace AWS region code you use
+**Optional variables** that can be customized (defaults will be used if not specified):
 
-```yaml
-# ------------------------------------------------------------
-# Local values
-# ------------------------------------------------------------
-locals {
-  name       = "qnx-on-aws-ws-xx"   # Replace `xx` with 2-digit ID
-  region     = "<YOUR_AWS_REGION>"     # Specify your AWS region
+```shell
+# =============================================================================
+# OPTIONAL CONFIGURATION (sensible defaults provided)
+# =============================================================================
+
+# Custom QNX AMI ID - leave empty to use default QNX OS 8.0 AMI
+qnx_custom_ami_id = ""
+
+# VPC network configuration - private IP range for workshop environment
+vpc_cidr = "10.1.0.0/16"
+
+# QNX instance type - ARM-based instances required for QNX compatibility
+# Options: c7g.large, c7g.xlarge, c7g.2xlarge, c8g.large, c8g.xlarge, etc.
+qnx_instance_type = "c7g.xlarge"
+
+# Ubuntu instance type - used for development and cross-compilation
+# Options: t3.large, t3.xlarge, t3.2xlarge, m5.large, m5.xlarge, etc.
+ubuntu_instance_type = "t3.xlarge"
+
+# Ubuntu root disk size in GB
+ubuntu_root_volume_size = 20
+
+# Terraform version for CodeBuild environment
+codebuild_terraform_version = "1.9.3"
 ```
 
 
@@ -140,7 +199,11 @@ Password: <ENTER ROOT PASSWORD>
 ```
 
 ```shell
+# Add qconn daemon to startup script for automatic launch on boot
 echo qconn >> /var/start_script.sh
+
+# Enable root SSH login
+cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak && awk '/^[[:space:]]*PermitRootLogin[[:space:]]+no/ {gsub(/no/, "yes"); print; next} {print}' /etc/ssh/sshd_config.bak > /tmp/sshd_config.tmp && mv /tmp/sshd_config.tmp /etc/ssh/sshd_config
 ```
 
 
@@ -201,20 +264,17 @@ $ aws ec2 describe-images --image-ids ami-04f6f6c2a180cd137
 
 ### Deploy a new EC2 QNX instance
 
-Comment out the existing AMI ID configuration and replace it with the newly created AMI ID in the following two files. Your custom QNX AMI ID should be different from others'.
+Update your custom QNX AMI ID in `terraform/terraform.tfvars`. Set the `qnx_custom_ami_id` variable with your newly created AMI ID:
 
-* `terraform/main.tf`
-* `github-example-repo/main.tf`
+```shell
+# =============================================================================
+# OPTIONAL CONFIGURATION (sensible defaults provided)
+# =============================================================================
 
-```yaml
-  # Parameters for EC2 QNX OS
-  ec2_qnx = {
-    ami = "${local.ec2_qnx_8_0_amis[local.region]}" # Default QNX OS
-    # ami                   = "<YOUR_CUSTOM_AMI_ID>"  # Custom QNX OS
-    instance_type         = "c7g.xlarge"
-    instance_profile_name = "AmazonSSMRoleForInstancesQuickSetup"
-  }
+# Custom QNX AMI ID - leave empty to use default QNX OS 8.0 AMI
+qnx_custom_ami_id = "<YOUR_CUSTOM_AMI_ID>"  # Custom QNX OS AMI
 ```
+
 
 Run the following terraform commands to terminate old EC2 QNX instance and deploy a new EC2 QNX instance with the newly created custom QNX AMI. It takes about 5 minutes to deploy an new EC2 QNX instance.
 
@@ -279,8 +339,7 @@ In the next screen, click **Install a new app**, then you are redirected to a Gi
 
 ### Prepare and configure the code
 
-Run the commands blow in `terraform/` directory to clone the empty GitHub repository to your home directory. **Replace `xx` with your 2-digit ID** (e.g. `qnx-on-aws-ws-01-hello-world`).
-
+Run the commands below in `terraform/` directory to clone the empty GitHub repository to your home directory. **Replace `xx` with your 2-digit ID** (e.g. `qnx-on-aws-ws-01-hello-world`).
 
 ```shell
 REPO_URL=$(terraform output -raw github_repository_url)
@@ -290,34 +349,10 @@ git clone ${REPO_URL}
 cd ./${REPO_NAME}
 ```
 
-
 Copy all files in `github-example-repo/` directory of the workshop package to the local repository you cloned.
 
 ```shell
 cp -a <WORKSHOP_DIR>/github-example-repo/* ./
-```
-
-Open `main.tf` in the local repository, then replace the following values in Terraform local values configuration.
-* `name`: Replace `xx` in the `name`'s value with 2-digit ID (e.g. `qnx-on-aws-ws-pl-01`)
-* `region`: Replace AWS region code you use
-* `ami`: Make sure the value is replaced with your customer QNX AMI ID.
-
-
-```yaml
-# ------------------------------------------------------------
-# Local values
-# ------------------------------------------------------------
-locals {
-  name       = "qnx-on-aws-ws-pl-xx"   # Replace `xx` with 2-digit ID
-  region     = "<YOUR_AWS_REGION>"        # Specify your AWS region
-  account_id = data.aws_caller_identity.current.account_id
-
-  # Parameters for EC2 QNX OS
-  ec2_qnx = {
-    ami                   = "<YOUR_CUSTOM_AMI_ID>" # Custom QNX OS AMI
-    instance_type         = "c7g.xlarge"
-    instance_profile_name = "AmazonSSMRoleForInstancesQuickSetup"
-  }
 ```
 
 

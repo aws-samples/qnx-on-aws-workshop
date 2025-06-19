@@ -1,3 +1,49 @@
-ubuntu_user_password = "<YOUR_PASSWORD>" # Ubuntu 'ubuntu' user password
-github_user          = "<GITHUB_USER>"   # GitHub user name for CI/CD
-github_repo          = "<GITHUB_REPO>"   # GitHub repository name for CI/CD
+# QNX on AWS Workshop - Terraform Variables Template
+# Copy this file to terraform.tfvars and replace placeholder values
+
+# =============================================================================
+# REQUIRED CONFIGURATION
+# =============================================================================
+
+# Project identifier - used for naming all AWS resources
+# Must be unique and 1-20 characters (letters, numbers, hyphens only)
+project_name = "qnx-on-aws-ws-xx"  # Replace `xx` with your 2-digit ID (e.g., "01", "02")
+
+# AWS region where all resources will be created
+# Choose a region that supports ARM instances (c7g/c8g family)
+aws_region = "ap-northeast-1"  # Examples: us-east-1, us-west-2, eu-west-1, ap-northeast-1
+
+# Password for Ubuntu 'ubuntu' user (minimum 8 characters)
+# Will be stored securely in AWS Secrets Manager
+ubuntu_user_password = "YourStrongPassword123!"
+
+# GitHub configuration for CI/CD pipeline
+github_user = "your-github-username"    # Your GitHub username
+github_repo = "your-repository-name"    # Repository containing workshop code
+
+# CodeBuild project name for CI/CD pipeline
+build_project_name = "qnx-on-aws-ws-pl-xx"  # Replace `xx` with same ID as project_name
+
+# =============================================================================
+# OPTIONAL CONFIGURATION (sensible defaults provided)
+# =============================================================================
+
+# Custom QNX AMI ID - leave empty to use default QNX OS 8.0 AMI
+qnx_custom_ami_id = ""
+
+# VPC network configuration - private IP range for workshop environment
+vpc_cidr = "10.1.0.0/16"
+
+# QNX instance type - ARM-based instances required for QNX compatibility
+# Options: c7g.large, c7g.xlarge, c7g.2xlarge, c8g.large, c8g.xlarge, etc.
+qnx_instance_type = "c7g.xlarge"
+
+# Ubuntu instance type - used for development and cross-compilation
+# Options: t3.large, t3.xlarge, t3.2xlarge, m5.large, m5.xlarge, etc.
+ubuntu_instance_type = "t3.xlarge"
+
+# Ubuntu root disk size in GB
+ubuntu_root_volume_size = 20
+
+# Terraform version for CodeBuild environment
+codebuild_terraform_version = "1.9.3"

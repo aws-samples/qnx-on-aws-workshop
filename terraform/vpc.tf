@@ -4,10 +4,10 @@
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "= 5.9.0"
+  version = "= 5.21.0"
 
-  name = local.name
-  cidr = local.vpc.cidr
+  name = var.project_name
+  cidr = var.vpc_cidr
   azs  = slice(data.aws_availability_zones.region.names, 0, 2)
   public_subnets = [
     cidrsubnet(module.vpc.vpc_cidr_block, 8, 0),
@@ -37,7 +37,7 @@ module "vpc" {
 
 module "vpc_endpoints" {
   source  = "terraform-aws-modules/vpc/aws//modules/vpc-endpoints"
-  version = "= 5.9.0"
+  version = "= 5.21.0"
 
   vpc_id = module.vpc.vpc_id
 
@@ -50,7 +50,7 @@ module "vpc_endpoints" {
         module.vpc.public_route_table_ids
       ])
       tags = {
-        Name = "${local.name}-s3-vpc-endpoint"
+        Name = "${var.project_name}-s3-vpc-endpoint"
       }
     },
 
@@ -60,7 +60,7 @@ module "vpc_endpoints" {
       subnet_ids         = module.vpc.private_subnets
       security_group_ids = [aws_security_group.secrets_manager.id]
       tags = {
-        Name = "${local.name}-secretsmanager-vpc-endpoint"
+        Name = "${var.project_name}-secretsmanager-vpc-endpoint"
       }
     }
 
@@ -70,7 +70,7 @@ module "vpc_endpoints" {
       subnet_ids         = module.vpc.private_subnets
       security_group_ids = [aws_security_group.cloudwatch_logs.id]
       tags = {
-        Name = "${local.name}-cloudwatch-logs-vpc-endpoint"
+        Name = "${var.project_name}-cloudwatch-logs-vpc-endpoint"
       }
     }
 
@@ -81,8 +81,8 @@ module "vpc_endpoints" {
 # Security group for VPC endpoints
 # ------------------------------------------------------------
 resource "aws_security_group" "secrets_manager" {
-  name_prefix = "${local.name}-secretsmanager-"
-  description = "Secrets Manager SG for ${local.name}"
+  name_prefix = "${var.project_name}-secretsmanager-"
+  description = "Secrets Manager SG for ${var.project_name}"
   vpc_id      = module.vpc.vpc_id
 
   ingress {
@@ -102,8 +102,8 @@ resource "aws_security_group" "secrets_manager" {
 }
 
 resource "aws_security_group" "cloudwatch_logs" {
-  name_prefix = "${local.name}-cloudwatch-logs-"
-  description = "CloudWatch Logs SG for ${local.name}"
+  name_prefix = "${var.project_name}-cloudwatch-logs-"
+  description = "CloudWatch Logs SG for ${var.project_name}"
   vpc_id      = module.vpc.vpc_id
 
   ingress {

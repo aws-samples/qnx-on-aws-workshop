@@ -7,11 +7,11 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "= 5.60.0"
+      version = "= 5.100.0"
     }
     tls = {
       source  = "hashicorp/tls"
-      version = "= 4.0.5"
+      version = "= 4.1.0"
     }
   }
 
@@ -25,10 +25,10 @@ terraform {
 # Provider
 # ------------------------------------------------------------
 provider "aws" {
-  region = local.region
+  region = var.aws_region
   default_tags {
     tags = {
-      Project = local.name
+      Project = var.project_name
     }
   }
 }
@@ -37,15 +37,14 @@ provider "aws" {
 # Local values
 # ------------------------------------------------------------
 locals {
-  name       = "qnx-on-aws-ws-pl-xx" # Replace `xx` with 2-digit ID
-  region     = "ap-northeast-1"      # Specify your AWS region
+  # Computed values that depend on data sources
   account_id = data.aws_caller_identity.current.account_id
-
-  # Parameters for EC2 QNX OS
+  
+  # Parameters for EC2 QNX OS - using variables
   ec2_qnx = {
-    ami                   = "<YOUR_CUSTOM_AMI_ID>" # Custom QNX OS AMI
-    instance_type         = "c7g.xlarge"
-    instance_profile_name = "AmazonSSMRoleForInstancesQuickSetup"
+    ami                   = var.qnx_custom_ami_id
+    instance_type         = var.qnx_instance_type
+    instance_profile_name = var.qnx_instance_profile_name
   }
 }
 
@@ -55,46 +54,6 @@ locals {
 data "aws_caller_identity" "current" {}
 data "aws_region" "current" {}
 data "aws_availability_zones" "region" { state = "available" }
-
-# ------------------------------------------------------------
-# Variables
-# ------------------------------------------------------------
-variable "vpc_id" {
-  description = "vpc_id"
-  type        = string
-  default     = ""
-}
-
-variable "private_subnet_id" {
-  description = "Private subnet ID"
-  type        = string
-  default     = ""
-}
-
-variable "vpc_cidr_block" {
-  description = "VPC CIDR Block"
-  type        = string
-  default     = ""
-}
-
-variable "key_pair_name" {
-  description = "Key pair name"
-  type        = string
-  default     = ""
-}
-
-variable "kms_key_id" {
-  description = "KMS Key ID"
-  type        = string
-  default     = ""
-}
-
-variable "instance_count" {
-  description = "instance_count"
-  type        = string
-  default     = ""
-}
-
 
 # ------------------------------------------------------------
 # Output

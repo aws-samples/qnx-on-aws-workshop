@@ -1,4 +1,25 @@
-# BlackBerry QNX on AWS workshop
+# BlackBerry QNX on AWS workshop <!-- omit in toc -->
+
+- [Overview](#overview)
+- [Architecture overview](#architecture-overview)
+- [File structure](#file-structure)
+- [Prerequisites](#prerequisites)
+    - [AWS environment](#aws-environment)
+        - [AWS account](#aws-account)
+        - [AWS credentials](#aws-credentials)
+        - [AWS region](#aws-region)
+    - [Client PC](#client-pc)
+    - [QNX software](#qnx-software)
+        - [myQNX account and QNX product evaluation license](#myqnx-account-and-qnx-product-evaluation-license)
+        - [QNX AMI subscription](#qnx-ami-subscription)
+    - [GitHub repository](#github-repository)
+- [Instructions](#instructions)
+- [Security](#security)
+- [License](#license)
+- [References](#references)
+    - [QNX 8.x](#qnx-8x)
+    - [QNX 7.x](#qnx-7x)
+
 
 ## Overview
 
@@ -51,22 +72,28 @@ Some important files are listed below.
 
 ```shell
 qnx-on-aws-workshop/
-├── CODE_OF_CONDUCT.md
-├── CONTRIBUTING.md
-├── INSTRUCTIONS.md
-├── LICENSE
-├── README.md
+├── .gitignore                          # Git ignore configuration
+├── CODE_OF_CONDUCT.md                  # Code of conduct guidelines
+├── CONTRIBUTING.md                     # Contributing guidelines
+├── INSTRUCTIONS-ja.md                  # Workshop instructions (Japanese)
+├── INSTRUCTIONS.md                     # Workshop instructions (English)
+├── LICENSE                             # License file
+├── README-ja.md                        # README file (Japanese)
+├── README.md                           # README file (English)
 ├── github-example-repo/                # CodeBuild files stored in GitHub repository
+│   ├── .gitignore                      # Git ignore configuration for CI repository
 │   ├── app/
 │   │   └── run_command.sh              # Sample CI application
 │   ├── arguments.txt                   # List of arguments passed to CI application
 │   ├── buildspec.yaml                  # Build specification for CodeBuild
 │   ├── ec2-qnx.tf                      # Terraform configurations for EC2 QNX instance in CI pipeline
 │   ├── main.tf                         # Main Terraform configurations for CI pipeline
-│   └── src/
-│       └── get_primes.c                # Sample CI application source
-├── image/
+│   ├── src/
+│   │   └── get_primes.c                # Sample CI application source
+│   └── variables.tf                    # Terraform variable configurations for CI pipeline
+├── image/                              # Image files for documentation
 └── terraform/                          # Terraform configurations for base environment
+    ├── .tool-versions                  # Tool version specifications
     ├── codex.tf                        # Terraform configurations for AWS developer tools
     ├── ec2-qnx.tf                      # Terraform configurations for EC2 QNX instance
     ├── ec2-ubuntu.tf                   # Terraform configurations for EC2 Ubuntu instance

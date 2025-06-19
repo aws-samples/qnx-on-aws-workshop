@@ -2,11 +2,11 @@
 # CodeBuild project
 # ------------------------------------------------------------
 resource "aws_codebuild_project" "workshop" {
-  name           = local.name
-  description    = "CodeBuild project for ${local.name}"
+  name           = var.project_name
+  description    = "CodeBuild project for ${var.project_name}"
   build_timeout  = "10"
   service_role   = aws_iam_role.codebuild.arn
-  encryption_key = aws_kms_key.workshop.arn
+  encryption_key = aws_kms_key.kms_key.arn
 
   artifacts {
     type = "CODEPIPELINE"
@@ -19,8 +19,14 @@ resource "aws_codebuild_project" "workshop" {
     image_pull_credentials_type = "CODEBUILD"
 
     environment_variable {
+      name  = "BUILD_PROJECT_NAME"
+      value = var.build_project_name
+      type  = "PLAINTEXT"
+    }
+
+    environment_variable {
       name  = "AWS_REGION"
-      value = local.region
+      value = var.aws_region
       type  = "PLAINTEXT"
     }
     environment_variable {
@@ -31,6 +37,11 @@ resource "aws_codebuild_project" "workshop" {
     environment_variable {
       name  = "QNX_HOST"
       value = module.ec2_instance_qnx.private_dns
+      type  = "PLAINTEXT"
+    }
+    environment_variable {
+      name  = "QNX_CUSTOM_AMI_ID"
+      value = var.qnx_custom_ami_id
       type  = "PLAINTEXT"
     }
     environment_variable {
@@ -60,12 +71,12 @@ resource "aws_codebuild_project" "workshop" {
     }
     environment_variable {
       name  = "KMS_KEY_ID"
-      value = aws_kms_key.workshop.id
+      value = aws_kms_key.kms_key.id
       type  = "PLAINTEXT"
     }
     environment_variable {
       name  = "TF_VERSION"
-      value = local.codebuild.tf_version
+      value = var.codebuild_terraform_version
       type  = "PLAINTEXT"
     }
     environment_variable {
@@ -78,7 +89,7 @@ resource "aws_codebuild_project" "workshop" {
   logs_config {
     cloudwatch_logs {
       # Use the string (not the reference to aws_cloudwatch_log_group resource) to avoid cyclic reference for KMS CMK
-      group_name = "/aws/codebuild/${local.name}"
+      group_name = "/aws/codebuild/${var.project_name}"
     }
   }
 
@@ -103,8 +114,8 @@ resource "aws_codebuild_project" "workshop" {
 # Security group for CodeBuild
 # ------------------------------------------------------------
 resource "aws_security_group" "codebuild" {
-  name_prefix = "${local.name}-codebuild-"
-  description = "CodeBuild SG for ${local.name}"
+  name_prefix = "${var.project_name}-codebuild-"
+  description = "CodeBuild SG for ${var.project_name}"
   vpc_id      = module.vpc.vpc_id
 
   egress {
@@ -120,7 +131,7 @@ resource "aws_security_group" "codebuild" {
 # IAM for CodeBuild
 # ------------------------------------------------------------
 resource "aws_iam_role" "codebuild" {
-  name_prefix = "${local.name}-codebuild-role-"
+  name_prefix = "${var.project_name}-codebuild-role-"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -134,16 +145,25 @@ resource "aws_iam_role" "codebuild" {
       },
     ]
   })
+}
 
-  managed_policy_arns = [
-    aws_iam_policy.codebuild.arn,
-    "arn:aws:iam::aws:policy/AWSCodeBuildAdminAccess",
-    "arn:aws:iam::aws:policy/AmazonEC2FullAccess"
-  ]
+resource "aws_iam_role_policy_attachment" "codebuild_custom_policy" {
+  role       = aws_iam_role.codebuild.name
+  policy_arn = aws_iam_policy.codebuild.arn
+}
+
+resource "aws_iam_role_policy_attachment" "codebuild_admin_access" {
+  role       = aws_iam_role.codebuild.name
+  policy_arn = "arn:aws:iam::aws:policy/AWSCodeBuildAdminAccess"
+}
+
+resource "aws_iam_role_policy_attachment" "codebuild_ec2_full_access" {
+  role       = aws_iam_role.codebuild.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2FullAccess"
 }
 
 resource "aws_iam_policy" "codebuild" {
-  name_prefix = "${local.name}-codebuild-"
+  name_prefix = "${var.project_name}-codebuild-"
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -168,8 +188,8 @@ resource "aws_iam_policy" "codebuild" {
         ],
         Resource = [
           # Use the string (not the reference to aws_cloudwatch_log_group resource) to avoid cyclic reference for KMS CMK
-          "arn:aws:logs:${local.region}:${local.account_id}:log-group:/aws/codebuild/*",
-          "arn:aws:logs:${local.region}:${local.account_id}:log-group:/aws/codebuild/*:log-stream:*"
+          "arn:aws:logs:${var.aws_region}:${local.account_id}:log-group:/aws/codebuild/*",
+          "arn:aws:logs:${var.aws_region}:${local.account_id}:log-group:/aws/codebuild/*:log-stream:*"
         ]
       },
       {
@@ -236,7 +256,7 @@ resource "aws_iam_policy" "codebuild" {
         "Action" : [
           "ssm:GetParameter",
         ],
-        "Resource" : "arn:aws:ssm:${local.region}::parameter/aws/service/*"
+        "Resource" : "arn:aws:ssm:${var.aws_region}::parameter/aws/service/*"
       }
     ]
   })
@@ -246,7 +266,7 @@ resource "aws_iam_policy" "codebuild" {
 # S3 for CodePipeline
 # ------------------------------------------------------------
 resource "aws_s3_bucket" "codepipeline_bucket" {
-  bucket_prefix = "${local.name}-codepipeline-bucket-"
+  bucket_prefix = "${var.project_name}-codepipeline-bucket-"
   force_destroy = true
 }
 
@@ -291,12 +311,12 @@ resource "aws_s3_bucket_public_access_block" "block" {
 # CodePipeline
 # ------------------------------------------------------------
 resource "aws_codestarconnections_connection" "github" {
-  name          = local.name
+  name          = var.project_name
   provider_type = "GitHub"
 }
 
 resource "aws_codepipeline" "codepipeline" {
-  name          = local.name
+  name          = var.project_name
   role_arn      = aws_iam_role.codepipeline.arn
   pipeline_type = "V2"
 
@@ -304,7 +324,7 @@ resource "aws_codepipeline" "codepipeline" {
     location = aws_s3_bucket.codepipeline_bucket.bucket
     type     = "S3"
     encryption_key {
-      id   = aws_kms_key.workshop.arn
+      id   = aws_kms_key.kms_key.arn
       type = "KMS"
     }
   }
@@ -351,7 +371,7 @@ resource "aws_codepipeline" "codepipeline" {
 # IAM for CodePilepine
 # ------------------------------------------------------------
 resource "aws_iam_role" "codepipeline" {
-  name_prefix = "${local.name}-codepipeline-role-"
+  name_prefix = "${var.project_name}-codepipeline-role-"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -365,14 +385,15 @@ resource "aws_iam_role" "codepipeline" {
       }
     ]
   })
+}
 
-  managed_policy_arns = [
-    aws_iam_policy.codepipeline.arn
-  ]
+resource "aws_iam_role_policy_attachment" "codepipeline_custom_policy" {
+  role       = aws_iam_role.codepipeline.name
+  policy_arn = aws_iam_policy.codepipeline.arn
 }
 
 resource "aws_iam_policy" "codepipeline" {
-  name_prefix = "${local.name}-codepipeline-"
+  name_prefix = "${var.project_name}-codepipeline-"
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -411,7 +432,7 @@ resource "aws_iam_policy" "codepipeline" {
         Action = [
           "kms:GenerateDataKey"
         ]
-        Resource = [aws_kms_key.workshop.arn]
+        Resource = [aws_kms_key.kms_key.arn]
       }
     ]
   })
@@ -421,7 +442,7 @@ resource "aws_iam_policy" "codepipeline" {
 # IAM for CloudWatch Event (EnvetBridge) for CodePilepine event-based change detection
 # ------------------------------------------------------------
 resource "aws_iam_role" "cwe_codepipeline" {
-  name_prefix = "${local.name}-cwe-codepipeline-"
+  name_prefix = "${var.project_name}-cwe-codepipeline-"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -435,14 +456,15 @@ resource "aws_iam_role" "cwe_codepipeline" {
       }
     ]
   })
+}
 
-  managed_policy_arns = [
-    aws_iam_policy.cwe_codepipeline.arn
-  ]
+resource "aws_iam_role_policy_attachment" "cwe_codepipeline_custom_policy" {
+  role       = aws_iam_role.cwe_codepipeline.name
+  policy_arn = aws_iam_policy.cwe_codepipeline.arn
 }
 
 resource "aws_iam_policy" "cwe_codepipeline" {
-  name_prefix = "${local.name}-cwe-codepipeline-"
+  name_prefix = "${var.project_name}-cwe-codepipeline-"
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -461,8 +483,8 @@ resource "aws_iam_policy" "cwe_codepipeline" {
 }
 
 resource "aws_cloudwatch_log_group" "codebuild" {
-  name              = "/aws/codebuild/${local.name}"
+  name              = "/aws/codebuild/${var.project_name}"
   retention_in_days = 365
-  kms_key_id        = aws_kms_key.workshop.arn
-  depends_on        = [aws_kms_key_policy.workshop]
+  kms_key_id        = aws_kms_key.kms_key.arn
+  depends_on        = [aws_kms_key_policy.kms_key_policy]
 }

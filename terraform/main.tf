@@ -7,11 +7,11 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "= 5.60.0"
+      version = "= 5.100.0"
     }
     tls = {
       source  = "hashicorp/tls"
-      version = "= 4.0.5"
+      version = "= 4.1.0"
     }
   }
 }
@@ -20,10 +20,10 @@ terraform {
 # Provider
 # ------------------------------------------------------------
 provider "aws" {
-  region = local.region
+  region = var.aws_region
   default_tags {
     tags = {
-      Project = local.name
+      Project = var.project_name
     }
   }
 }
@@ -32,32 +32,22 @@ provider "aws" {
 # Local values
 # ------------------------------------------------------------
 locals {
-  name       = "qnx-on-aws-ws-xx" # Replace `xx` with 2-digit ID
-  region     = "ap-northeast-1"   # Specify your AWS region
+  # Computed values that depend on data sources or complex logic
   account_id = data.aws_caller_identity.current.account_id
-  vpc = {
-    cidr = "10.1.0.0/16" # VPC IPv4 CIDR
-  }
 
-  # Parameters for EC2 QNX OS
+  # Parameters for EC2 QNX OS - using variables with fallback to default AMIs
   ec2_qnx = {
-    ami = "${local.ec2_qnx_8_0_amis[local.region]}" # Default QNX OS 8.0 AMI
-    # ami                   = "<YOUR_CUSTOM_AMI_ID>"  # Custom QNX OS 8.0 AMI
-    instance_type         = "c7g.xlarge"
-    instance_profile_name = "AmazonSSMRoleForInstancesQuickSetup"
+    ami                   = var.qnx_custom_ami_id != "" ? var.qnx_custom_ami_id : local.ec2_qnx_8_0_amis[var.aws_region]
+    instance_type         = var.qnx_instance_type
+    instance_profile_name = var.qnx_instance_profile_name
   }
 
   # Parameters for EC2 Ubuntu instance
   ec2_ubuntu = {
     ami                   = data.aws_ami.ec2_ubuntu.id
-    instance_type         = "t3.xlarge"
-    instance_profile_name = "AmazonSSMRoleForInstancesQuickSetup"
-    ebs_root_volume_size  = "20"
-  }
-
-  # Parameters for CodeBuild
-  codebuild = {
-    tf_version = "1.9.3"
+    instance_type         = var.ubuntu_instance_type
+    instance_profile_name = var.ubuntu_instance_profile_name
+    ebs_root_volume_size  = var.ubuntu_root_volume_size
   }
 
   # QNX OS 8.0.2 AMI mapping

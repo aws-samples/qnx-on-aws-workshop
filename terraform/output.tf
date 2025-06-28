@@ -1,3 +1,8 @@
+output "aws_region" {
+  description = "AWS region"
+  value       = var.aws_region
+}
+
 output "private_key" {
   description = "Private key of the key pair"
   value       = tls_private_key.private_key.private_key_openssh

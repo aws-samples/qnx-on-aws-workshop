@@ -288,6 +288,7 @@ SSM ポートフォワーディングを使用して、クライアント PC か
 
 ```shell
 aws ssm start-session \
+  --region $(terraform output -raw aws_region) \
   --target $(terraform output -raw ec2_instance_ubuntu_instance_id) \
   --document-name AWS-StartPortForwardingSession \
   --parameters '{"portNumber":["3389"],"localPortNumber":["33890"]}'

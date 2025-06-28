@@ -289,6 +289,7 @@ Use the SSM port forwarding to run port forwarding from the client PC to EC2 dev
 
 ```shell
 aws ssm start-session \
+  --region $(terraform output -raw aws_region) \
   --target $(terraform output -raw ec2_instance_ubuntu_instance_id) \
   --document-name AWS-StartPortForwardingSession \
   --parameters '{"portNumber":["3389"],"localPortNumber":["33890"]}'

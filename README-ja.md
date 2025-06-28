@@ -48,7 +48,7 @@ BlackBerry® QNX® は、自動車、ロボティクス、航空宇宙、航空�
 
 ワークショップでは、以下のアーキテクチャに基づいて AWS リソースをデプロイします。
 
-<img src="image/qnx-workshop-architecture-diagram.drawio.png" width="1000" alt="Architecture Diagram">
+<img src="docs/image/qnx-workshop-architecture-diagram.drawio.png" width="1000" alt="Architecture Diagram">
 
 
 * AWS アカウント、ユーザー、リソース
@@ -75,11 +75,13 @@ qnx-on-aws-workshop/
 ├── .gitignore                          # Git ignore設定
 ├── CODE_OF_CONDUCT.md                  # 行動規範ガイドライン
 ├── CONTRIBUTING.md                     # 貢献ガイドライン
-├── INSTRUCTIONS-ja.md                  # ワークショップ手順 (日本語)
-├── INSTRUCTIONS.md                     # ワークショップ手順 (英語)
 ├── LICENSE                             # ライセンスファイル
 ├── README-ja.md                        # READMEファイル (日本語)
 ├── README.md                           # READMEファイル (英語)
+├── docs/                               # ドキュメントファイル
+│   ├── INSTRUCTIONS-ja.md              # ワークショップ手順 (日本語)
+│   ├── INSTRUCTIONS.md                 # ワークショップ手順 (英語)
+│   └── image/                          # ドキュメント用画像ファイル
 ├── github-example-repo/                # GitHubリポジトリに保存されるCodeBuildファイル
 │   ├── .gitignore                      # CIリポジトリ用Git ignore設定
 │   ├── app/
@@ -91,7 +93,12 @@ qnx-on-aws-workshop/
 │   ├── src/
 │   │   └── get_primes.c                # サンプルCIアプリケーションソース
 │   └── variables.tf                    # CIパイプライン用Terraform変数設定
-├── image/                              # ドキュメント用画像ファイル
+├── simple-qnx-cockpit/                 # シンプルQNXコックピットアプリケーション
+│   ├── .gitignore                      # コックピットアプリケーション用Git ignore設定
+│   ├── Makefile                        # ビルド設定
+│   ├── README-ja.md                    # READMEファイル (日本語)
+│   ├── README.md                       # READMEファイル (英語)
+│   └── cockpit.cpp                     # メインコックピットアプリケーションソースコード
 └── terraform/                          # ベース環境用Terraform設定
     ├── .tool-versions                  # ツールバージョン仕様
     ├── codex.tf                        # AWS開発者ツール用Terraform設定
@@ -177,7 +184,7 @@ qnx-on-aws-workshop/
 
 ## 手順
 
-詳細な手順については、[手順](INSTRUCTIONS-ja.md) を参照してください。
+詳細な手順については、[手順](docs/INSTRUCTIONS-ja.md) を参照してください。
 
 ## セキュリティ
 

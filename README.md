@@ -48,7 +48,7 @@ This repository provides the workshop package and quick instructions to build th
 
 In the workshop, we will deploy AWS resources based on the following architecture.
 
-<img src="image/qnx-workshop-architecture-diagram.drawio.png" width="1000" alt="Architecture Diagram">
+<img src="docs/image/qnx-workshop-architecture-diagram.drawio.png" width="1000" alt="Architecture Diagram">
 
 
 * AWS account, users and resources
@@ -75,11 +75,13 @@ qnx-on-aws-workshop/
 ├── .gitignore                          # Git ignore configuration
 ├── CODE_OF_CONDUCT.md                  # Code of conduct guidelines
 ├── CONTRIBUTING.md                     # Contributing guidelines
-├── INSTRUCTIONS-ja.md                  # Workshop instructions (Japanese)
-├── INSTRUCTIONS.md                     # Workshop instructions (English)
 ├── LICENSE                             # License file
 ├── README-ja.md                        # README file (Japanese)
 ├── README.md                           # README file (English)
+├── docs/                               # Documentation files
+│   ├── INSTRUCTIONS-ja.md              # Workshop instructions (Japanese)
+│   ├── INSTRUCTIONS.md                 # Workshop instructions (English)
+│   └── image/                          # Image files for documentation
 ├── github-example-repo/                # CodeBuild files stored in GitHub repository
 │   ├── .gitignore                      # Git ignore configuration for CI repository
 │   ├── app/
@@ -91,7 +93,12 @@ qnx-on-aws-workshop/
 │   ├── src/
 │   │   └── get_primes.c                # Sample CI application source
 │   └── variables.tf                    # Terraform variable configurations for CI pipeline
-├── image/                              # Image files for documentation
+├── simple-qnx-cockpit/                 # Simple QNX cockpit application
+│   ├── .gitignore                      # Git ignore configuration for cockpit application
+│   ├── Makefile                        # Build configuration
+│   ├── README-ja.md                    # README file (Japanese)
+│   ├── README.md                       # README file (English)
+│   └── cockpit.cpp                     # Main cockpit application source code
 └── terraform/                          # Terraform configurations for base environment
     ├── .tool-versions                  # Tool version specifications
     ├── codex.tf                        # Terraform configurations for AWS developer tools
@@ -177,7 +184,7 @@ In the workshop, we use a GitHub repository for CI/CD. Please create a GitHub us
 
 ## Instructions
 
-See [INSTRUCTIONS](INSTRUCTIONS.md) for more detailed instructions.
+See [INSTRUCTIONS](docs/INSTRUCTIONS.md) for more detailed instructions.
 
 ## Security
 

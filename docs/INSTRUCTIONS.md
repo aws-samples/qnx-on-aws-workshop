@@ -1,5 +1,7 @@
 # Instructions <!-- omit in toc -->
 
+**English** | [日本語](INSTRUCTIONS-ja.md)
+
 - [Prepare workshop environment](#prepare-workshop-environment)
   - [Prepare information used in the workshop](#prepare-information-used-in-the-workshop)
   - [Install prerequisite software](#install-prerequisite-software)
@@ -17,6 +19,7 @@
 - [Install and develop with QNX SDP](#install-and-develop-with-qnx-sdp)
   - [Install QNX Software](#install-qnx-software)
   - [Develop with QNX SDP](#develop-with-qnx-sdp)
+- [Develop with VS Code and Amazon Q Developer](#develop-with-vs-code-and-amazon-q-developer)
 - [Run CI with AWS developer tools](#run-ci-with-aws-developer-tools)
   - [Update a connection to GitHub](#update-a-connection-to-github)
   - [Prepare and configure the code](#prepare-and-configure-the-code)
@@ -289,6 +292,7 @@ Use the SSM port forwarding to run port forwarding from the client PC to EC2 dev
 
 ```shell
 aws ssm start-session \
+  --region $(terraform output -raw aws_region) \
   --target $(terraform output -raw ec2_instance_ubuntu_instance_id) \
   --document-name AWS-StartPortForwardingSession \
   --parameters '{"portNumber":["3389"],"localPortNumber":["33890"]}'
@@ -316,6 +320,15 @@ We install and use QNX software on the development host.
 ### Develop with QNX SDP
 
 Please refer to QNX documentations above. If you want to learn further advanced QNX development, please refer to [QNX Training | Embedded Development and Product Training](https://blackberry.qnx.com/en/services/training).
+
+
+## Develop with VS Code and Amazon Q Developer
+
+We use modern development tools including Visual Studio Code with QNX Toolkit extension and Amazon Q Developer for efficient QNX application development.
+
+We demonstrate cross-platform QNX development using VS Code with a simple QNX cockpit application. The workshop covers code understanding with Amazon Q Developer, automated build and deployment, and cross-platform compatibility between Linux and QNX targets.
+
+Please refer to the full workshop instructions for detailed steps at [BlackBerry QNX on AWS workshop](https://catalog.workshops.aws/qnx-on-aws).
 
 
 ## Run CI with AWS developer tools

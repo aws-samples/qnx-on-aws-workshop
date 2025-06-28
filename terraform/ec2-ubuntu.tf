@@ -22,9 +22,10 @@ module "ec2_instance_ubuntu" {
   }
 
   user_data = base64encode(templatefile("script/user_data_script_ubuntu.sh", {
-    aws_region             = var.aws_region
-    ubuntu_password_secret = aws_secretsmanager_secret.ubuntu_password.id
-    private_key_secret     = aws_secretsmanager_secret.private_key.id
+    aws_region                  = var.aws_region
+    ubuntu_password_secret      = aws_secretsmanager_secret.ubuntu_password.id
+    private_key_secret          = aws_secretsmanager_secret.private_key.id
+    ec2_instance_qnx_private_ip = module.ec2_instance_qnx.private_ip
   }))
 
   depends_on = [

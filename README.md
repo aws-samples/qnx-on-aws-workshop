@@ -1,5 +1,9 @@
 # BlackBerry QNX on AWS workshop <!-- omit in toc -->
 
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
+**English** | [日本語](README-ja.md)
+
 - [Overview](#overview)
 - [Architecture overview](#architecture-overview)
 - [File structure](#file-structure)
@@ -14,11 +18,11 @@
         - [QNX AMI subscription](#qnx-ami-subscription)
     - [GitHub repository](#github-repository)
 - [Instructions](#instructions)
-- [Security](#security)
-- [License](#license)
 - [References](#references)
     - [QNX 8.x](#qnx-8x)
     - [QNX 7.x](#qnx-7x)
+- [Security](#security)
+- [License](#license)
 
 
 ## Overview
@@ -34,12 +38,18 @@ In May 2024, BlackBerry [announced availability](https://www.edaway.com/2024/03/
 
 * [QNX OS 8.0](https://aws.amazon.com/marketplace/pp/prodview-fyhziqwvrksrw)
 
-
-
 BlackBerry® QNX® has been widely used to build mission-critical embedded systems across industries such as automotive, robotics, aerospace, avionics, energy and medical.
 
-With the combination of new QNX Amazon Machine Image (AMI) and Amazon EC2 instances powered by AWS Graviton Processors (an Arm-based processor developed by AWS), AWS customers can use the agility, flexibility and scalability of the AWS Cloud to support their embedded software development.
+With the combination of new **QNX Amazon Machine Image (AMI)** and **Amazon EC2 instances powered by AWS Graviton Processors** (an Arm-based processor developed by AWS), AWS customers can use the agility, flexibility and scalability of the AWS Cloud to support their embedded software development.
 
+
+The workshop also includes modern QNX development using **Visual Studio Code** and **Amazon Q Developer**:
+
+* VS Code Integration: Modern IDE experience with QNX Toolkit extension for cross-platform development and automated build/deployment
+* Amazon Q Developer: AI-powered coding agent for code understanding, enhancement, optimization, and troubleshooting
+* Cross-Platform Development: Single codebase that runs on both Linux and QNX targets
+
+This approach improves developer productivity and reduces time-to-market for embedded QNX applications.
 
 This repository provides the workshop package and quick instructions to build the base environment for the workshop. For the full instructions, please refer to [BlackBerry QNX on AWS workshop](https://catalog.workshops.aws/qnx-on-aws).
 
@@ -48,7 +58,7 @@ This repository provides the workshop package and quick instructions to build th
 
 In the workshop, we will deploy AWS resources based on the following architecture.
 
-<img src="image/qnx-workshop-architecture-diagram.drawio.png" width="1000" alt="Architecture Diagram">
+<img src="docs/image/qnx-workshop-architecture-diagram.drawio.png" width="1000" alt="Architecture Diagram">
 
 
 * AWS account, users and resources
@@ -75,11 +85,13 @@ qnx-on-aws-workshop/
 ├── .gitignore                          # Git ignore configuration
 ├── CODE_OF_CONDUCT.md                  # Code of conduct guidelines
 ├── CONTRIBUTING.md                     # Contributing guidelines
-├── INSTRUCTIONS-ja.md                  # Workshop instructions (Japanese)
-├── INSTRUCTIONS.md                     # Workshop instructions (English)
 ├── LICENSE                             # License file
 ├── README-ja.md                        # README file (Japanese)
 ├── README.md                           # README file (English)
+├── docs/                               # Documentation files
+│   ├── INSTRUCTIONS-ja.md              # Workshop instructions (Japanese)
+│   ├── INSTRUCTIONS.md                 # Workshop instructions (English)
+│   └── image/                          # Image files for documentation
 ├── github-example-repo/                # CodeBuild files stored in GitHub repository
 │   ├── .gitignore                      # Git ignore configuration for CI repository
 │   ├── app/
@@ -91,7 +103,12 @@ qnx-on-aws-workshop/
 │   ├── src/
 │   │   └── get_primes.c                # Sample CI application source
 │   └── variables.tf                    # Terraform variable configurations for CI pipeline
-├── image/                              # Image files for documentation
+├── simple-qnx-cockpit/                 # Simple QNX cockpit application
+│   ├── .gitignore                      # Git ignore configuration for cockpit application
+│   ├── Makefile                        # Build configuration
+│   ├── README-ja.md                    # README file (Japanese)
+│   ├── README.md                       # README file (English)
+│   └── cockpit.cpp                     # Main cockpit application source code
 └── terraform/                          # Terraform configurations for base environment
     ├── .tool-versions                  # Tool version specifications
     ├── codex.tf                        # Terraform configurations for AWS developer tools
@@ -177,16 +194,7 @@ In the workshop, we use a GitHub repository for CI/CD. Please create a GitHub us
 
 ## Instructions
 
-See [INSTRUCTIONS](INSTRUCTIONS.md) for more detailed instructions.
-
-## Security
-
-See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
-
-
-## License
-
-This library is licensed under the MIT-0 License. See the [LICENSE](LICENSE) file.
+See [INSTRUCTIONS](docs/INSTRUCTIONS.md) for more detailed instructions.
 
 
 ## References
@@ -213,3 +221,13 @@ This library is licensed under the MIT-0 License. See the [LICENSE](LICENSE) fil
 * [QNX Momentics IDE User's Guide](https://www.qnx.com/developers/docs/7.1/#com.qnx.doc.ide.userguide/topic/about.html)
 * [QNX Software Development Platform](https://www.qnx.com/developers/docs/7.1/#com.qnx.doc.qnxsdp.nav/topic/bookset.html)
 * [QNX Training | Embedded Development and Product Training | BlackBerry QNX](https://blackberry.qnx.com/en/services/training)
+
+
+## Security
+
+See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
+
+
+## License
+
+This library is licensed under the MIT-0 License. See the [LICENSE](LICENSE) file.

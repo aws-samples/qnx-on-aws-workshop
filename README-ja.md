@@ -1,5 +1,9 @@
 # BlackBerry QNX on AWS ワークショップ <!-- omit in toc -->
 
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
+[English](README.md) | **日本語**
+
 - [概要](#概要)
 - [アーキテクチャ概要](#アーキテクチャ概要)
 - [ファイル構成](#ファイル構成)
@@ -14,11 +18,11 @@
         - [QNX AMI サブスクリプション](#qnx-ami-サブスクリプション)
     - [GitHub リポジトリ](#github-リポジトリ)
 - [手順](#手順)
-- [セキュリティ](#セキュリティ)
-- [ライセンス](#ライセンス)
 - [参考資料](#参考資料)
     - [QNX 8.x](#qnx-8x)
     - [QNX 7.x](#qnx-7x)
+- [セキュリティ](#セキュリティ)
+- [ライセンス](#ライセンス)
 
 
 ## 概要
@@ -34,21 +38,26 @@ BlackBerry QNX on AWS ワークショップでは、AWS クラウド上での組
 
 * [QNX OS 8.0](https://aws.amazon.com/marketplace/pp/prodview-fyhziqwvrksrw)
 
-
-
 BlackBerry® QNX® は、自動車、ロボティクス、航空宇宙、航空電子工学、エネルギー、医療などの業界において、ミッションクリティカルな組み込みシステムの構築に広く使用されています。
 
-新しい QNX Amazon Machine Image (AMI) と AWS Graviton プロセッサ（AWS が開発した Arm ベースのプロセッサ）を搭載した Amazon EC2 インスタンスの組み合わせにより、AWS のお客様は、AWS クラウドの俊敏性、柔軟性、拡張性を活用して組み込みソフトウェア開発をサポートできます。
+新しい **QNX Amazon Machine Image (AMI)** と **AWS Graviton プロセッサを搭載した Amazon EC2 インスタンス**の組み合わせにより、AWS のお客様は、AWS クラウドの俊敏性、柔軟性、拡張性を活用して組み込みソフトウェア開発をサポートできます。
 
+ワークショップには、**Visual Studio Code** と **Amazon Q Developer** を使用したモダンな QNX 開発も含まれています。
 
-このリポジトリは、ワークショップパッケージとワークショップのベース環境を構築するためのクイック手順を提供します。詳細な手順については、[BlackBerry QNX on AWS workshop](https://catalog.workshops.aws/qnx-on-aws) を参照してください。
+* **VS Code 統合**: QNX Toolkit 拡張機能によるクロスプラットフォーム開発と自動ビルド/デプロイメントを備えたモダンな IDE 体験
+* **Amazon Q Developer**: コードの理解、拡張、最適化、トラブルシューティングのための AI 搭載コーディングアシスタント
+* **クロスプラットフォーム開発**: Linux と QNX ターゲットの両方で動作する単一のコードベース
+
+このアプローチにより、開発者の生産性を向上し、組み込み QNX アプリケーションの市場投入時間を短縮することができます。
+
+このリポジトリは、ワークショップパッケージとワークショップのベース環境を構築するためのクイックな手順を提供します。詳細な手順については、[BlackBerry QNX on AWS ワークショップ](https://catalog.workshops.aws/qnx-on-aws/ja-JP) を参照してください。
 
 
 ## アーキテクチャ概要
 
 ワークショップでは、以下のアーキテクチャに基づいて AWS リソースをデプロイします。
 
-<img src="image/qnx-workshop-architecture-diagram.drawio.png" width="1000" alt="Architecture Diagram">
+<img src="docs/image/qnx-workshop-architecture-diagram.drawio.png" width="1000" alt="Architecture Diagram">
 
 
 * AWS アカウント、ユーザー、リソース
@@ -75,11 +84,13 @@ qnx-on-aws-workshop/
 ├── .gitignore                          # Git ignore設定
 ├── CODE_OF_CONDUCT.md                  # 行動規範ガイドライン
 ├── CONTRIBUTING.md                     # 貢献ガイドライン
-├── INSTRUCTIONS-ja.md                  # ワークショップ手順 (日本語)
-├── INSTRUCTIONS.md                     # ワークショップ手順 (英語)
 ├── LICENSE                             # ライセンスファイル
 ├── README-ja.md                        # READMEファイル (日本語)
 ├── README.md                           # READMEファイル (英語)
+├── docs/                               # ドキュメントファイル
+│   ├── INSTRUCTIONS-ja.md              # ワークショップ手順 (日本語)
+│   ├── INSTRUCTIONS.md                 # ワークショップ手順 (英語)
+│   └── image/                          # ドキュメント用画像ファイル
 ├── github-example-repo/                # GitHubリポジトリに保存されるCodeBuildファイル
 │   ├── .gitignore                      # CIリポジトリ用Git ignore設定
 │   ├── app/
@@ -91,7 +102,12 @@ qnx-on-aws-workshop/
 │   ├── src/
 │   │   └── get_primes.c                # サンプルCIアプリケーションソース
 │   └── variables.tf                    # CIパイプライン用Terraform変数設定
-├── image/                              # ドキュメント用画像ファイル
+├── simple-qnx-cockpit/                 # シンプルQNXコックピットアプリケーション
+│   ├── .gitignore                      # コックピットアプリケーション用Git ignore設定
+│   ├── Makefile                        # ビルド設定
+│   ├── README-ja.md                    # READMEファイル (日本語)
+│   ├── README.md                       # READMEファイル (英語)
+│   └── cockpit.cpp                     # メインコックピットアプリケーションソースコード
 └── terraform/                          # ベース環境用Terraform設定
     ├── .tool-versions                  # ツールバージョン仕様
     ├── codex.tf                        # AWS開発者ツール用Terraform設定
@@ -177,16 +193,7 @@ qnx-on-aws-workshop/
 
 ## 手順
 
-詳細な手順については、[手順](INSTRUCTIONS-ja.md) を参照してください。
-
-## セキュリティ
-
-詳細については、[CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) を参照してください。
-
-
-## ライセンス
-
-このライブラリは MIT-0 ライセンスの下でライセンスされています。[LICENSE](LICENSE) ファイルを参照してください。
+詳細な手順については、[手順](docs/INSTRUCTIONS-ja.md) を参照してください。
 
 
 ## 参考資料
@@ -213,3 +220,13 @@ qnx-on-aws-workshop/
 * [QNX Momentics IDE User's Guide](https://www.qnx.com/developers/docs/7.1/#com.qnx.doc.ide.userguide/topic/about.html)
 * [QNX Software Development Platform](https://www.qnx.com/developers/docs/7.1/#com.qnx.doc.qnxsdp.nav/topic/bookset.html)
 * [QNX Training | Embedded Development and Product Training | BlackBerry QNX](https://blackberry.qnx.com/en/services/training)
+
+
+## セキュリティ
+
+詳細については、[CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) を参照してください。
+
+
+## ライセンス
+
+このライブラリは MIT-0 ライセンスの下でライセンスされています。[LICENSE](LICENSE) ファイルを参照してください。

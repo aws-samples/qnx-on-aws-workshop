@@ -1,0 +1,29 @@
+{
+  "version": "2.0.0",
+  "configurations": [
+    {
+      "type": "qnx-gdb",
+      "request": "launch",
+      "name": "build/aarch64le/cockpit",
+      "gdb": "gdb",
+      "program": "build/aarch64le/cockpit",
+      "remotePath": "cockpit",
+      "qnxtarget": "default",
+      "upload": true,
+      "stopAtEntry": true,
+      "preLaunchTask": "${defaultBuildTask}"
+    },
+    {
+      "type": "qnx-gdb",
+      "request": "launch",
+      "name": "build/linux/cockpit",
+      "gdb": "gdb",
+      "program": "build/linux/cockpit",
+      "remotePath": "cockpit",
+      "qnxtarget": "default",
+      "upload": true,
+      "stopAtEntry": true,
+      "preLaunchTask": "${defaultBuildTask}"
+    }
+  ]
+}

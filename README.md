@@ -18,11 +18,11 @@
         - [QNX AMI subscription](#qnx-ami-subscription)
     - [GitHub repository](#github-repository)
 - [Instructions](#instructions)
-- [Security](#security)
-- [License](#license)
 - [References](#references)
     - [QNX 8.x](#qnx-8x)
     - [QNX 7.x](#qnx-7x)
+- [Security](#security)
+- [License](#license)
 
 
 ## Overview
@@ -190,15 +190,6 @@ In the workshop, we use a GitHub repository for CI/CD. Please create a GitHub us
 
 See [INSTRUCTIONS](docs/INSTRUCTIONS.md) for more detailed instructions.
 
-## Security
-
-See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
-
-
-## License
-
-This library is licensed under the MIT-0 License. See the [LICENSE](LICENSE) file.
-
 
 ## References
 
@@ -224,3 +215,13 @@ This library is licensed under the MIT-0 License. See the [LICENSE](LICENSE) fil
 * [QNX Momentics IDE User's Guide](https://www.qnx.com/developers/docs/7.1/#com.qnx.doc.ide.userguide/topic/about.html)
 * [QNX Software Development Platform](https://www.qnx.com/developers/docs/7.1/#com.qnx.doc.qnxsdp.nav/topic/bookset.html)
 * [QNX Training | Embedded Development and Product Training | BlackBerry QNX](https://blackberry.qnx.com/en/services/training)
+
+
+## Security
+
+See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
+
+
+## License
+
+This library is licensed under the MIT-0 License. See the [LICENSE](LICENSE) file.

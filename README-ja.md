@@ -18,11 +18,11 @@
         - [QNX AMI サブスクリプション](#qnx-ami-サブスクリプション)
     - [GitHub リポジトリ](#github-リポジトリ)
 - [手順](#手順)
-- [セキュリティ](#セキュリティ)
-- [ライセンス](#ライセンス)
 - [参考資料](#参考資料)
     - [QNX 8.x](#qnx-8x)
     - [QNX 7.x](#qnx-7x)
+- [セキュリティ](#セキュリティ)
+- [ライセンス](#ライセンス)
 
 
 ## 概要
@@ -190,15 +190,6 @@ qnx-on-aws-workshop/
 
 詳細な手順については、[手順](docs/INSTRUCTIONS-ja.md) を参照してください。
 
-## セキュリティ
-
-詳細については、[CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) を参照してください。
-
-
-## ライセンス
-
-このライブラリは MIT-0 ライセンスの下でライセンスされています。[LICENSE](LICENSE) ファイルを参照してください。
-
 
 ## 参考資料
 
@@ -224,3 +215,13 @@ qnx-on-aws-workshop/
 * [QNX Momentics IDE User's Guide](https://www.qnx.com/developers/docs/7.1/#com.qnx.doc.ide.userguide/topic/about.html)
 * [QNX Software Development Platform](https://www.qnx.com/developers/docs/7.1/#com.qnx.doc.qnxsdp.nav/topic/bookset.html)
 * [QNX Training | Embedded Development and Product Training | BlackBerry QNX](https://blackberry.qnx.com/en/services/training)
+
+
+## セキュリティ
+
+詳細については、[CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) を参照してください。
+
+
+## ライセンス
+
+このライブラリは MIT-0 ライセンスの下でライセンスされています。[LICENSE](LICENSE) ファイルを参照してください。

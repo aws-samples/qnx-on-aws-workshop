@@ -1,10 +1,12 @@
+**English** | [日本語](README-ja.md)
+
 # Simple QNX Cockpit
 
 A cross-platform vehicle cockpit application demonstrating real-time embedded system development for automotive applications. Built with C++ and designed to run identically on both Linux development environments and QNX real-time operating systems.
 
 ## Overview
 
-This project showcases a minimal yet functional vehicle dashboard with basic speed simulation for demonstration purposes. The application features a text-based user interface with animated speed gauges, making it ideal for embedded systems where graphical displays may not be available or necessary.
+This project showcases a simple vehicle dashboard with basic speed simulation for demonstration purposes. The application features a text-based user interface with animated speed gauges, making it ideal for embedded systems where graphical displays may not be available or necessary.
 
 **Key Use Cases:**
 - Embedded automotive development prototyping

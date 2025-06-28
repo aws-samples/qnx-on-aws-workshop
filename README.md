@@ -49,7 +49,7 @@ The workshop also includes modern QNX development using **Visual Studio Code** a
 * Amazon Q Developer: AI-powered coding agent for code understanding, enhancement, optimization, and troubleshooting
 * Cross-Platform Development: Single codebase that runs on both Linux and QNX targets
 
-This approach significantly improves developer productivity and reduces time-to-market for embedded QNX applications.
+This approach improves developer productivity and reduces time-to-market for embedded QNX applications.
 
 This repository provides the workshop package and quick instructions to build the base environment for the workshop. For the full instructions, please refer to [BlackBerry QNX on AWS workshop](https://catalog.workshops.aws/qnx-on-aws).
 

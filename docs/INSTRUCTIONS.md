@@ -1,5 +1,7 @@
 # Instructions <!-- omit in toc -->
 
+**English** | [日本語](INSTRUCTIONS-ja.md)
+
 - [Prepare workshop environment](#prepare-workshop-environment)
   - [Prepare information used in the workshop](#prepare-information-used-in-the-workshop)
   - [Install prerequisite software](#install-prerequisite-software)

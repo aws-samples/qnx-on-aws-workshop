@@ -1,5 +1,9 @@
 # BlackBerry QNX on AWS ワークショップ <!-- omit in toc -->
 
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
+[English](README.md) | **日本語**
+
 - [概要](#概要)
 - [アーキテクチャ概要](#アーキテクチャ概要)
 - [ファイル構成](#ファイル構成)

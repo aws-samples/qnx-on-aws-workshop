@@ -38,12 +38,18 @@ In May 2024, BlackBerry [announced availability](https://www.edaway.com/2024/03/
 
 * [QNX OS 8.0](https://aws.amazon.com/marketplace/pp/prodview-fyhziqwvrksrw)
 
-
-
 BlackBerry® QNX® has been widely used to build mission-critical embedded systems across industries such as automotive, robotics, aerospace, avionics, energy and medical.
 
-With the combination of new QNX Amazon Machine Image (AMI) and Amazon EC2 instances powered by AWS Graviton Processors (an Arm-based processor developed by AWS), AWS customers can use the agility, flexibility and scalability of the AWS Cloud to support their embedded software development.
+With the combination of new **QNX Amazon Machine Image (AMI)** and **Amazon EC2 instances powered by AWS Graviton Processors** (an Arm-based processor developed by AWS), AWS customers can use the agility, flexibility and scalability of the AWS Cloud to support their embedded software development.
 
+
+The workshop also includes modern QNX development using **Visual Studio Code** and **Amazon Q Developer**:
+
+* VS Code Integration: Modern IDE experience with QNX Toolkit extension for cross-platform development and automated build/deployment
+* Amazon Q Developer: AI-powered coding agent for code understanding, enhancement, optimization, and troubleshooting
+* Cross-Platform Development: Single codebase that runs on both Linux and QNX targets
+
+This approach significantly improves developer productivity and reduces time-to-market for embedded QNX applications.
 
 This repository provides the workshop package and quick instructions to build the base environment for the workshop. For the full instructions, please refer to [BlackBerry QNX on AWS workshop](https://catalog.workshops.aws/qnx-on-aws).
 

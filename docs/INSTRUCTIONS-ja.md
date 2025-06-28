@@ -17,6 +17,7 @@
 - [QNX SDP のインストールと開発](#qnx-sdp-のインストールと開発)
   - [QNX ソフトウェアのインストール](#qnx-ソフトウェアのインストール)
   - [QNX SDP での開発](#qnx-sdp-での開発)
+- [VS Code と Amazon Q Developer での開発](#vs-code-と-amazon-q-developer-での開発)
 - [AWS 開発者ツールでの CI の実行](#aws-開発者ツールでの-ci-の実行)
   - [GitHub への接続の更新](#github-への接続の更新)
   - [コードの準備と設定](#コードの準備と設定)
@@ -316,6 +317,15 @@ Remote Desktop クライアントで EC2 開発ホストに接続してログイ
 ### QNX SDP での開発
 
 上記の QNX ドキュメントを参照してください。さらに高度な QNX 開発について学習したい場合は、[QNX Training | Embedded Development and Product Training](https://blackberry.qnx.com/en/services/training) を参照してください。
+
+
+## VS Code と Amazon Q Developer での開発
+
+効率的な QNX アプリケーション開発のために、QNX Toolkit 拡張機能を備えた Visual Studio Code と Amazon Q Developer を含むモダンな開発ツールを使用します。
+
+シンプルな QNX コックピットアプリケーションを使用して、VS Code でのクロスプラットフォーム QNX 開発を実演します。ワークショップでは、Amazon Q Developer を使用したコードの理解、自動ビルドとデプロイメント、Linux と QNX ターゲット間のクロスプラットフォーム互換性について説明します。
+
+詳細な手順については、完全なワークショップ手順を[BlackBerry QNX on AWS ワークショップ](https://catalog.workshops.aws/qnx-on-aws/ja-JP)から参照してください。
 
 
 ## AWS 開発者ツールでの CI の実行

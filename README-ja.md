@@ -38,14 +38,19 @@ BlackBerry QNX on AWS ワークショップでは、AWS クラウド上での組
 
 * [QNX OS 8.0](https://aws.amazon.com/marketplace/pp/prodview-fyhziqwvrksrw)
 
-
-
 BlackBerry® QNX® は、自動車、ロボティクス、航空宇宙、航空電子工学、エネルギー、医療などの業界において、ミッションクリティカルな組み込みシステムの構築に広く使用されています。
 
-新しい QNX Amazon Machine Image (AMI) と AWS Graviton プロセッサ（AWS が開発した Arm ベースのプロセッサ）を搭載した Amazon EC2 インスタンスの組み合わせにより、AWS のお客様は、AWS クラウドの俊敏性、柔軟性、拡張性を活用して組み込みソフトウェア開発をサポートできます。
+新しい **QNX Amazon Machine Image (AMI)** と **AWS Graviton プロセッサを搭載した Amazon EC2 インスタンス**の組み合わせにより、AWS のお客様は、AWS クラウドの俊敏性、柔軟性、拡張性を活用して組み込みソフトウェア開発をサポートできます。
 
+ワークショップには、**Visual Studio Code** と **Amazon Q Developer** を使用したモダンな QNX 開発も含まれています。
 
-このリポジトリは、ワークショップパッケージとワークショップのベース環境を構築するためのクイック手順を提供します。詳細な手順については、[BlackBerry QNX on AWS workshop](https://catalog.workshops.aws/qnx-on-aws) を参照してください。
+* **VS Code 統合**: QNX Toolkit 拡張機能によるクロスプラットフォーム開発と自動ビルド/デプロイメントを備えたモダンな IDE 体験
+* **Amazon Q Developer**: コードの理解、拡張、最適化、トラブルシューティングのための AI 搭載コーディングアシスタント
+* **クロスプラットフォーム開発**: Linux と QNX ターゲットの両方で動作する単一のコードベース
+
+このアプローチにより、開発者の生産性が大幅に向上し、組み込み QNX アプリケーションの市場投入時間が短縮されます。
+
+このリポジトリは、ワークショップパッケージとワークショップのベース環境を構築するためのクイック手順を提供します。詳細な手順については、[BlackBerry QNX on AWS ワークショップ](https://catalog.workshops.aws/qnx-on-aws/ja-JP) を参照してください。
 
 
 ## アーキテクチャ概要

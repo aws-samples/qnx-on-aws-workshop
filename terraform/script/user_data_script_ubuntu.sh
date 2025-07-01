@@ -25,6 +25,10 @@ aws secretsmanager get-secret-value --secret-id ${private_key_secret} --query Se
 chown ubuntu:ubuntu ~ubuntu/.ssh/id_rsa
 chmod 600 ~ubuntu/.ssh/id_rsa
 
+# Japanese configuration
+apt install -y language-pack-ja-base language-pack-ja language-pack-gnome-ja-base language-pack-gnome-ja fonts-noto-cjk-extra task-japanese-gnome-desktop mozc-utils-gui
+im-config -n ibus
+
 # Install VS Code
 VSCODE_DEB="/tmp/code_latest_amd64.deb"
 wget -O "$VSCODE_DEB" "https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-x64"
@@ -63,10 +67,11 @@ chown ubuntu:ubuntu /home/ubuntu/.bashrc
 echo '[ -f "/home/ubuntu/qnx800/qnxsdp-env.sh" ] && source "/home/ubuntu/qnx800/qnxsdp-env.sh"' >> /home/ubuntu/.bashrc
 
 # Download simple-qnx-cockpit from QNX Workshop
+mkdir -p /home/ubuntu/qnxprojects
 cd /home/ubuntu/qnxprojects
 git clone --filter=blob:none --sparse https://github.com/aws-samples/qnx-on-aws-workshop.git temp-repo
 cd temp-repo
 git sparse-checkout set simple-qnx-cockpit
 mv simple-qnx-cockpit ../
 cd .. && rm -rf temp-repo
-chown -R ubuntu:ubuntu simple-qnx-cockpit
+chown -R ubuntu:ubuntu /home/ubuntu/qnxprojects

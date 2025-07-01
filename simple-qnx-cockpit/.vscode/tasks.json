@@ -3,20 +3,18 @@
 	"tasks": [
 		{
 			"type": "shell",
-			"label": "QNX: build debug",
-			"command": "make BUILD_PROFILE=debug PLATFORM=${config:qnx.arch} all",
+			"label": "QNX: build",
+			"command": "make",
+			"args": ["PLATFORM=aarch64le", "all"],
 			"options": {
 				"cwd": "${workspaceFolder}",
 				"env": {
 					"QNX_HOST": "${env:QNX_HOST}",
 					"QNX_TARGET": "${env:QNX_TARGET}",
-					"MAKEFLAGS": "${env:MAKEFLAGS}",
 					"PATH": "${env:PATH}"
 				}
 			},
-			"problemMatcher": [
-				"$gcc"
-			],
+			"problemMatcher": ["$gcc"],
 			"group": {
 				"kind": "build",
 				"isDefault": true
@@ -24,45 +22,56 @@
 		},
 		{
 			"type": "shell",
-			"label": "QNX: clean",
-			"command": "make clean",
+			"label": "Linux: build and run",
+			"command": "make",
+			"args": ["linux"],
 			"options": {
-				"cwd": "${workspaceFolder}",
-				"env": {
-					"QNX_HOST": "${env:QNX_HOST}",
-					"QNX_TARGET": "${env:QNX_TARGET}",
-					"MAKEFLAGS": "${env:MAKEFLAGS}",
-					"PATH": "${env:PATH}"
-				}
+				"cwd": "${workspaceFolder}"
 			},
-			"problemMatcher": [
-				"$gcc"
-			],
-			"group": {
-				"kind": "build",
-				"isDefault": false
-			}
+			"problemMatcher": ["$gcc"],
+			"group": "build"
 		},
 		{
 			"type": "shell",
-			"label": "QNX: build release",
-			"command": "make BUILD_PROFILE=release PLATFORM=${config:qnx.arch} all",
+			"label": "QNX: deploy",
+			"command": "make",
+			"args": ["qnx-deploy"],
 			"options": {
 				"cwd": "${workspaceFolder}",
 				"env": {
 					"QNX_HOST": "${env:QNX_HOST}",
 					"QNX_TARGET": "${env:QNX_TARGET}",
-					"MAKEFLAGS": "${env:MAKEFLAGS}",
 					"PATH": "${env:PATH}"
 				}
 			},
-			"problemMatcher": [
-				"$gcc"
-			],
-			"group": {
-				"kind": "build",
-				"isDefault": false
-			}
+			"problemMatcher": ["$gcc"],
+			"group": "build"
+		},
+		{
+			"type": "shell",
+			"label": "QNX: build, deploy and run",
+			"command": "make",
+			"args": ["qnx"],
+			"options": {
+				"cwd": "${workspaceFolder}",
+				"env": {
+					"QNX_HOST": "${env:QNX_HOST}",
+					"QNX_TARGET": "${env:QNX_TARGET}",
+					"PATH": "${env:PATH}"
+				}
+			},
+			"problemMatcher": ["$gcc"],
+			"group": "build"
+		},
+		{
+			"type": "shell",
+			"label": "Clean",
+			"command": "make",
+			"args": ["clean"],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"group": "build"
 		}
 	]
 }

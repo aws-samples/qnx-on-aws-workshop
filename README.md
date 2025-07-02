@@ -18,6 +18,7 @@
         - [QNX AMI subscription](#qnx-ami-subscription)
     - [GitHub repository](#github-repository)
 - [Instructions](#instructions)
+- [CI/CD Options](#cicd-options)
 - [References](#references)
     - [QNX 8.x](#qnx-8x)
     - [QNX 7.x](#qnx-7x)
@@ -72,8 +73,10 @@ In the workshop, we will deploy AWS resources based on the following architectur
     * EC2 QNX instance (QNX target) is deployed in an isolated secure VPC network on AWS.
     * To securely access the EC2 QNX target, each user securely establishes a connection with SSM port forwarding using Session Manager, and logs into the EC2 QNX instance using SSH client. EC2 QNX instance private key is securely managed in a Secrets Manager secret.
 * CI pipeline
-    * The workshop creates CodeBuild project, CodePipeline pipeline and VPC endpoints to run Continuous Integration (CI) pipeline with EC2 QNX instances.
-    * CodeBuild container deploys CI pipeline resources such as EC2 QNX instances, and runs pre-defined CI tasks. It automatically destroys the created resources once the CI tasks are completed.
+    * The workshop supports both **AWS CodeBuild/CodePipeline** and **GitHub Actions** for CI/CD.
+    * Both options create temporary EC2 QNX instances, run pre-defined CI tasks, and automatically destroy the created resources once the CI tasks are completed.
+    * CodeBuild runs in your VPC with VPC endpoints for secure communication.
+    * GitHub Actions uses OIDC for secure AWS authentication without long-lived credentials.
 
 
 ## File structure
@@ -92,8 +95,11 @@ qnx-on-aws-workshop/
 │   ├── INSTRUCTIONS-ja.md              # Workshop instructions (Japanese)
 │   ├── INSTRUCTIONS.md                 # Workshop instructions (English)
 │   └── image/                          # Image files for documentation
-├── github-example-repo/                # CodeBuild files stored in GitHub repository
+├── github-example-repo/                # CI/CD files for GitHub repository
 │   ├── .gitignore                      # Git ignore configuration for CI repository
+│   ├── .github/
+│   │   └── workflows/
+│   │       └── qnx-ci.yml              # GitHub Actions workflow
 │   ├── app/
 │   │   └── run_command.sh              # Sample CI application
 │   ├── arguments.txt                   # List of arguments passed to CI application
@@ -102,7 +108,10 @@ qnx-on-aws-workshop/
 │   ├── main.tf                         # Main Terraform configurations for CI pipeline
 │   ├── src/
 │   │   └── get_primes.c                # Sample CI application source
-│   └── variables.tf                    # Terraform variable configurations for CI pipeline
+│   ├── variables.tf                    # Terraform variable configurations for CI pipeline
+│   ├── setup-github-actions.sh         # Helper script for GitHub Actions setup
+│   ├── README-CI-SETUP.md              # Comprehensive CI/CD setup guide
+│   └── README-CI-SETUP-ja.md           # CI/CD setup guide (Japanese)
 ├── simple-qnx-cockpit/                 # Simple QNX cockpit application
 │   ├── .gitignore                      # Git ignore configuration for cockpit application
 │   ├── Makefile                        # Build configuration
@@ -111,11 +120,13 @@ qnx-on-aws-workshop/
 │   └── cockpit.cpp                     # Main cockpit application source code
 └── terraform/                          # Terraform configurations for base environment
     ├── .tool-versions                  # Tool version specifications
-    ├── codex.tf                        # Terraform configurations for AWS developer tools
+    ├── ci-shared-resources.tf          # Shared CI/CD resources (S3, etc.)
+    ├── ci-codebuild.tf                 # AWS CodeBuild/CodePipeline resources
+    ├── ci-github-actions.tf            # GitHub Actions OIDC and IAM resources
     ├── ec2-qnx.tf                      # Terraform configurations for EC2 QNX instance
     ├── ec2-ubuntu.tf                   # Terraform configurations for EC2 Ubuntu instance
     ├── keys_and_secrets.tf             # Terraform configurations for EC2 key pair, secrets and KMS
-    ├── main.tf                         # Main Terraform configurations for base environment
+    ├── main.tf                         # Main Terraform configurations including CI/CD locals
     ├── output.tf                       # Terraform configurations for output values
     ├── script/
     │   └── user_data_script_ubuntu.sh  # User data script for EC2 Ubuntu instance
@@ -195,6 +206,37 @@ In the workshop, we use a GitHub repository for CI/CD. Please create a GitHub us
 ## Instructions
 
 See [INSTRUCTIONS](docs/INSTRUCTIONS.md) for more detailed instructions.
+
+
+## CI/CD Options
+
+The workshop supports two CI/CD approaches:
+
+### GitHub Actions (Default)
+- **Best for**: Teams using GitHub as primary development platform
+- **Features**: Native GitHub integration, OIDC authentication, no long-lived credentials
+- **Setup**: Requires repository variables configuration in GitHub
+- **Configuration**: Uses `.github/workflows/qnx-ci.yml` for workflow definition
+
+### AWS CodeBuild/CodePipeline
+- **Best for**: Teams already using AWS services extensively
+- **Features**: Deep AWS integration, VPC support, CloudWatch logging
+- **Setup**: Requires GitHub connection configuration in AWS Console
+- **Configuration**: Uses `buildspec.yaml` for build specification
+
+Both options:
+- Deploy temporary QNX EC2 instances for testing
+- Execute applications on QNX targets
+- Clean up resources automatically
+- Provide secure authentication and access control
+
+**Choose your provider** by setting `ci_cd_provider` in `terraform/terraform.tfvars`:
+```hcl
+ci_cd_provider = "github-actions"   # GitHub Actions (default)
+# ci_cd_provider = "codebuild"      # AWS CodeBuild/CodePipeline
+```
+
+For detailed setup instructions, see [CI/CD Setup Guide](github-example-repo/README-CI-SETUP.md).
 
 
 ## References

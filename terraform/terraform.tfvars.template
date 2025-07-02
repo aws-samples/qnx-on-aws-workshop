@@ -25,25 +25,65 @@ github_repo = "your-repository-name"    # Repository containing workshop code
 build_project_name = "qnx-on-aws-ws-pl-xx"  # Replace `xx` with same ID as project_name
 
 # =============================================================================
+# CI/CD PROVIDER SELECTION
+# =============================================================================
+
+# Choose your CI/CD provider:
+# - "github-actions": GitHub Actions (default, GitHub-native CI/CD with AWS OIDC)
+# - "codebuild": AWS CodeBuild/CodePipeline (fully managed AWS service)
+# - "none": Disable CI/CD resources (not recommended for workshop)
+ci_cd_provider = "github-actions"
+
+# =============================================================================
 # OPTIONAL CONFIGURATION (sensible defaults provided)
 # =============================================================================
 
 # Custom QNX AMI ID - leave empty to use default QNX OS 8.0 AMI
+# After creating your custom QNX AMI, update this value
 qnx_custom_ami_id = ""
 
 # VPC network configuration - private IP range for workshop environment
 vpc_cidr = "10.1.0.0/16"
 
 # QNX instance type - ARM-based instances required for QNX compatibility
+# Recommended: c7g.xlarge for development, c7g.large for testing
 # Options: c7g.large, c7g.xlarge, c7g.2xlarge, c8g.large, c8g.xlarge, etc.
 qnx_instance_type = "c7g.xlarge"
 
 # Ubuntu instance type - used for development and cross-compilation
+# Recommended: t3.xlarge for development, t3.large for basic usage
 # Options: t3.large, t3.xlarge, t3.2xlarge, m5.large, m5.xlarge, etc.
 ubuntu_instance_type = "t3.xlarge"
 
-# Ubuntu root disk size in GB
+# Ubuntu root disk size in GB (minimum 8 GB, recommended 20+ GB)
 ubuntu_root_volume_size = 20
 
-# Terraform version for CodeBuild environment
-codebuild_terraform_version = "1.9.3"
+# Terraform version for CI/CD environment
+terraform_version = "1.9.3"
+
+# =============================================================================
+# ADVANCED CONFIGURATION (rarely needs changes)
+# =============================================================================
+
+# IAM instance profile names (use existing profiles if available)
+# qnx_instance_profile_name = "AmazonSSMRoleForInstancesQuickSetup"
+# ubuntu_instance_profile_name = "AmazonSSMRoleForInstancesQuickSetup"
+
+# Legacy variable for backward compatibility (will use terraform_version if not set)
+# codebuild_terraform_version = "1.9.3"
+
+# =============================================================================
+# CONFIGURATION VALIDATION
+# =============================================================================
+
+# Before running terraform apply, verify:
+# ✓ project_name is unique (replace 'xx' with your 2-digit ID)
+# ✓ aws_region supports ARM instances (c7g/c8g family)
+# ✓ ubuntu_user_password is at least 8 characters
+# ✓ github_user and github_repo are correct
+# ✓ build_project_name uses same ID as project_name
+# ✓ ci_cd_provider is set to your preferred option
+
+# For CI/CD setup instructions, see:
+# - docs/INSTRUCTIONS.md (main workshop instructions)
+# - github-example-repo/README-CI-SETUP.md (detailed CI/CD setup guide)

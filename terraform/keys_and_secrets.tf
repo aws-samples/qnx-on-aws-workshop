@@ -64,11 +64,18 @@ resource "aws_kms_key_policy" "kms_key_policy" {
         Effect = "Allow"
         Principal = {
           Service = "logs.${var.aws_region}.amazonaws.com"
-          AWS = [
-            aws_iam_role.codepipeline.arn,
-            aws_iam_role.codebuild.arn,
-            "arn:aws:iam::${local.account_id}:root"
-          ]
+          AWS = concat(
+            [
+              "arn:aws:iam::${local.account_id}:root"
+            ],
+            var.ci_cd_provider == "codebuild" ? [
+              aws_iam_role.codepipeline[0].arn,
+              aws_iam_role.codebuild[0].arn
+            ] : [],
+            var.ci_cd_provider == "github-actions" ? [
+              aws_iam_role.github_actions[0].arn
+            ] : []
+          )
         }
         Resource = "*"
       },

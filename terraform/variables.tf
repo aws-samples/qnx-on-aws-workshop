@@ -134,8 +134,19 @@ variable "vpc_cidr" {
 }
 
 # ------------------------------------------------------------
-# CodeBuild Configuration Variables
+# CI/CD Configuration Variables
 # ------------------------------------------------------------
+
+variable "ci_cd_provider" {
+  description = "CI/CD provider to use: 'github-actions' for GitHub Actions or 'codebuild' for AWS CodeBuild/CodePipeline"
+  type        = string
+  default     = "github-actions"
+
+  validation {
+    condition     = contains(["codebuild", "github-actions"], var.ci_cd_provider)
+    error_message = "CI/CD provider must be either 'codebuild' or 'github-actions'."
+  }
+}
 
 variable "build_project_name" {
   description = "Name of the build project, used for resource naming and tagging"
@@ -148,14 +159,21 @@ variable "build_project_name" {
   }
 }
 
-variable "codebuild_terraform_version" {
-  description = "Terraform version to use in CodeBuild"
+variable "terraform_version" {
+  description = "Terraform version to use in CI/CD"
   type        = string
   default     = "1.9.3"
 
   validation {
-    condition     = can(regex("^[0-9]+\\.[0-9]+\\.[0-9]+$", var.codebuild_terraform_version))
+    condition     = can(regex("^[0-9]+\\.[0-9]+\\.[0-9]+$", var.terraform_version))
     error_message = "Terraform version must be in semantic version format (e.g., 1.9.3)."
   }
+}
+
+# Legacy variable for backward compatibility
+variable "codebuild_terraform_version" {
+  description = "Terraform version to use in CodeBuild (deprecated, use terraform_version instead)"
+  type        = string
+  default     = ""
 }
 

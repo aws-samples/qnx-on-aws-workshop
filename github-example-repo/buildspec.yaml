@@ -8,7 +8,7 @@ env:
     ARGS: "arguments.txt"
     INSTS_ARGS: "insts_args.txt"
 
-    phases:
+phases:
   install:
     commands:
       # Install Terraform command

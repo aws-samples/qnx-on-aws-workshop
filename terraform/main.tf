@@ -61,6 +61,31 @@ locals {
     us-east-1      = "ami-0d07d4120bfb8ef3d"
     us-west-2      = "ami-0095b80a82406356a"
   }
+
+  # ------------------------------------------------------------
+  # CI/CD Configuration
+  # ------------------------------------------------------------
+  
+  # CI/CD enablement flag
+  ci_cd_enabled = var.ci_cd_provider != "none"
+  
+  # Determine which bucket to use based on CI/CD provider
+  terraform_state_bucket = var.ci_cd_provider != "none" ? aws_s3_bucket.ci_artifacts[0].bucket : null
+  
+  # Common environment variables for CI/CD
+  ci_environment_variables = {
+    AWS_REGION              = var.aws_region
+    BUILD_PROJECT_NAME      = var.build_project_name
+    QNX_CUSTOM_AMI_ID       = var.qnx_custom_ami_id
+    VPC_ID                  = module.vpc.vpc_id
+    PRIVATE_SUBNET_ID       = module.vpc.private_subnets[0]
+    VPC_CIDR_BLOCK          = module.vpc.vpc_cidr_block
+    KEY_PAIR_NAME           = aws_key_pair.key_pair.key_name
+    PRIVATE_KEY_SECRET_ID   = aws_secretsmanager_secret.private_key.id
+    KMS_KEY_ID              = aws_kms_key.kms_key.id
+    TF_VERSION              = var.terraform_version
+    TF_BACKEND_S3           = local.terraform_state_bucket
+  }
 }
 
 # ------------------------------------------------------------

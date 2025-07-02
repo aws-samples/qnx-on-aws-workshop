@@ -333,13 +333,86 @@ Please refer to the full workshop instructions for detailed steps at [BlackBerry
 
 ## Run CI with AWS developer tools
 
-We will demonstrate how to automate CI processes with EC2 QNX instance using developer tools such as GitHub, CodeBuild and CodePipeline.
+We will demonstrate how to automate CI processes with EC2 QNX instances using either AWS CodeBuild/CodePipeline or GitHub Actions. The workshop supports both approaches, allowing you to choose the CI/CD solution that best fits your needs.
 
+### Choose your CI/CD provider
 
-### Update a connection to GitHub
+The workshop supports two CI/CD options:
+
+1. **GitHub Actions** (default): GitHub-native CI/CD with AWS OIDC authentication
+2. **AWS CodeBuild/CodePipeline**: Fully managed AWS service with deep AWS integration
+
+Configure your choice in `terraform/terraform.tfvars`:
+
+```shell
+# CI/CD Configuration
+ci_cd_provider = "github-actions"   # Use GitHub Actions (default)
+# ci_cd_provider = "codebuild"      # Use AWS CodeBuild/CodePipeline
+```
+
+### Option 1: GitHub Actions Setup (Default)
+
+#### Configure GitHub repository variables
+
+After deploying the infrastructure with `ci_cd_provider = "github-actions"`, get the required configuration values:
+
+```shell
+terraform output ci_environment_variables
+```
+
+In your GitHub repository, go to **Settings** → **Secrets and variables** → **Actions** → **Variables** tab and add the following repository variables:
+
+| Variable Name | Description |
+|---------------|-------------|
+| `AWS_REGION` | Your AWS region |
+| `AWS_ROLE_ARN` | GitHub Actions IAM role ARN for OIDC authentication |
+| `BUILD_PROJECT_NAME` | Your build project name |
+| `QNX_CUSTOM_AMI_ID` | Your custom QNX AMI ID |
+| `VPC_ID` | VPC ID from Terraform |
+| `PRIVATE_SUBNET_ID` | Private subnet ID |
+| `VPC_CIDR_BLOCK` | VPC CIDR block |
+| `KEY_PAIR_NAME` | EC2 key pair name |
+| `PRIVATE_KEY_SECRET_ID` | Secrets Manager secret ID |
+| `KMS_KEY_ID` | KMS key ID |
+| `TF_VERSION` | Terraform version |
+| `TF_BACKEND_S3` | S3 bucket for Terraform state |
+
+#### Prepare and configure the code
+
+Run the commands below in `terraform/` directory to clone the GitHub repository and copy the workshop files:
+
+```shell
+REPO_URL=$(terraform output -raw github_repository_url)
+REPO_NAME=$(terraform output -raw github_repository_name)
+cd ~
+git clone ${REPO_URL}
+cd ./${REPO_NAME}
+```
+
+Copy all files including the GitHub Actions workflow:
+
+```shell
+cp -a <WORKSHOP_DIR>/github-example-repo/* ./
+cp -a <WORKSHOP_DIR>/github-example-repo/.github ./
+```
+
+#### Execute a GitHub Actions workflow
+
+Commit and push the changes to GitHub repository. This will trigger the GitHub Actions workflow which deploys EC2 QNX instances and executes the defined tasks.
+
+```shell
+git add -A
+git commit -m "Add GitHub Actions CI/CD pipeline"
+git push origin main
+```
+
+Go to your GitHub repository → **Actions** tab to monitor the workflow execution.
+
+### Option 2: AWS CodeBuild/CodePipeline Setup
+
+#### Update a connection to GitHub
 
 To allow AWS CodePipeline to connect to a GitHub repository, we need to manually update a connection. This can be done by installing AWS Connector for GitHub in your GitHub account.
-
 
 Navigate **Settings** > **Connections** in Developer Tools console. Choose the connection you deployed as a part of terraform deployment (e.g. `qnx-on-aws-ws-xx`), then click **Update pending connection**.
 
@@ -347,10 +420,7 @@ Navigate **Settings** > **Connections** in Developer Tools console. Choose the c
 
 In the next screen, click **Install a new app**, then you are redirected to a GitHub page. Then, follow the relevant steps in [Create a connection to GitHub](https://docs.aws.amazon.com/dtconsole/latest/userguide/connections-create-github.html#connections-create-github-console) so that you can configure the connection to GitHub repository. When successfully updated, you'll see connection's status to be `Available`.
 
-
-
-
-### Prepare and configure the code
+#### Prepare and configure the code
 
 Run the commands below in `terraform/` directory to clone the empty GitHub repository to your home directory. **Replace `xx` with your 2-digit ID** (e.g. `qnx-on-aws-ws-01-hello-world`).
 
@@ -368,8 +438,7 @@ Copy all files in `github-example-repo/` directory of the workshop package to th
 cp -a <WORKSHOP_DIR>/github-example-repo/* ./
 ```
 
-
-### Execute a CI pipeline
+#### Execute a CI pipeline
 
 Commit and push the changes to GitHub repository. Pushing new changes to the repository will trigger the CodePipeline pipeline which initiates CodeBuild project. The project deploys EC2 QNX instances and executes commands defined in `buildspec.yaml`.
 
@@ -380,3 +449,22 @@ git push origin main
 ```
 
 Go to [CodePipeline console](https://console.aws.amazon.com/codesuite/codepipeline/pipelines) in your region and click your pipeline name (e.g. `qnx-on-aws-ws-01`) to see the progress in detail.
+
+### CI/CD Workflow Comparison
+
+| Feature | GitHub Actions | CodeBuild/CodePipeline |
+|---------|----------------|------------------------|
+| **Setup** | Repository variables required | GitHub connection required |
+| **Monitoring** | GitHub Actions UI | AWS Console |
+| **Configuration** | `.github/workflows/qnx-ci.yml` | `buildspec.yaml` |
+| **Triggers** | Native GitHub triggers | GitHub webhooks |
+| **Cost** | GitHub Actions minutes | AWS CodeBuild pricing |
+| **Default Choice** | ✓ Recommended | Alternative |
+
+Both approaches provide the same functionality:
+- Deploy temporary QNX EC2 instances
+- Execute your application on QNX targets  
+- Clean up resources automatically
+- Secure authentication and access control
+
+For detailed setup instructions and troubleshooting, see the [CI/CD Setup Guide](../github-example-repo/README-CI-SETUP.md).

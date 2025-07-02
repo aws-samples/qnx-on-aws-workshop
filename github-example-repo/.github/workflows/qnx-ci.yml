@@ -1,0 +1,130 @@
+name: QNX CI Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+env:
+  AWS_REGION: ${{ vars.AWS_REGION }}
+  INSTANCE_COUNT: 2
+  LIST_OF_INSTANCES: "list_of_instances.txt"
+  ARGS: "arguments.txt"
+  INSTS_ARGS: "insts_args.txt"
+  TF_VERSION: ${{ vars.TF_VERSION || '1.9.3' }}
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  qnx-ci:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: ${{ env.TF_VERSION }}
+
+    - name: Terraform Init
+      run: |
+        terraform init \
+          -backend=true \
+          -backend-config="bucket=${{ vars.TF_BACKEND_S3 }}" \
+          -backend-config="key=prod/terraform.tfstate" \
+          -backend-config="region=${{ env.AWS_REGION }}"
+
+    - name: Terraform Plan
+      run: |
+        terraform plan \
+          -var "aws_region=${{ env.AWS_REGION }}" \
+          -var "project_name=${{ vars.BUILD_PROJECT_NAME }}" \
+          -var "qnx_custom_ami_id=${{ vars.QNX_CUSTOM_AMI_ID }}" \
+          -var "instance_count=${{ env.INSTANCE_COUNT }}" \
+          -var "vpc_id=${{ vars.VPC_ID }}" \
+          -var "private_subnet_id=${{ vars.PRIVATE_SUBNET_ID }}" \
+          -var "vpc_cidr_block=${{ vars.VPC_CIDR_BLOCK }}" \
+          -var "key_pair_name=${{ vars.KEY_PAIR_NAME }}" \
+          -var "kms_key_id=${{ vars.KMS_KEY_ID }}"
+
+    - name: Terraform Apply
+      run: |
+        terraform apply \
+          -var "aws_region=${{ env.AWS_REGION }}" \
+          -var "project_name=${{ vars.BUILD_PROJECT_NAME }}" \
+          -var "qnx_custom_ami_id=${{ vars.QNX_CUSTOM_AMI_ID }}" \
+          -var "instance_count=${{ env.INSTANCE_COUNT }}" \
+          -var "vpc_id=${{ vars.VPC_ID }}" \
+          -var "private_subnet_id=${{ vars.PRIVATE_SUBNET_ID }}" \
+          -var "vpc_cidr_block=${{ vars.VPC_CIDR_BLOCK }}" \
+          -var "key_pair_name=${{ vars.KEY_PAIR_NAME }}" \
+          -var "kms_key_id=${{ vars.KMS_KEY_ID }}" \
+          -auto-approve \
+          -compact-warnings
+
+    - name: Setup SSH and Deploy Application
+      run: |
+        # Get private key from Secrets Manager
+        SSH_PRIVATE_KEY=$(aws secretsmanager get-secret-value \
+          --secret-id ${{ vars.PRIVATE_KEY_SECRET_ID }} \
+          --query SecretString --output text)
+        
+        # Setup SSH key
+        mkdir -p ~/.ssh
+        echo "${SSH_PRIVATE_KEY}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        
+        # Create list of hosts and args
+        terraform output -json list_of_ec2_instance_qnx_private_dns | jq -r '.[]' > "${LIST_OF_INSTANCES}"
+        paste -d, ${LIST_OF_INSTANCES} ${ARGS} > "${INSTS_ARGS}"
+        
+        # Copy application to target hosts
+        for HOST in $(cat ${LIST_OF_INSTANCES}); do
+          scp -i ~/.ssh/id_rsa -q -P 22 -r \
+            -o StrictHostKeyChecking=no \
+            -o UserKnownHostsFile=/dev/null \
+            app/ "root@${HOST}:"
+        done
+
+    - name: Execute CI Tasks
+      run: |
+        # Run commands on each QNX instance
+        for LINE in $(cat ${INSTS_ARGS}); do
+          HOST=$(echo ${LINE} | cut -d, -f1)
+          ARG=$(echo ${LINE} | cut -d, -f2)
+          
+          echo "Running CI task on ${HOST} with argument: ${ARG}"
+          ssh -i ~/.ssh/id_rsa -q -p 22 \
+            -o StrictHostKeyChecking=no \
+            -o UserKnownHostsFile=/dev/null \
+            root@${HOST} \
+            "chmod u+x /root/app/*; /root/app/run_command.sh \"${ARG}\""
+        done
+
+    - name: Cleanup Resources
+      if: always()
+      run: |
+        terraform destroy \
+          -var "aws_region=${{ env.AWS_REGION }}" \
+          -var "project_name=${{ vars.BUILD_PROJECT_NAME }}" \
+          -var "qnx_custom_ami_id=${{ vars.QNX_CUSTOM_AMI_ID }}" \
+          -var "instance_count=${{ env.INSTANCE_COUNT }}" \
+          -var "vpc_id=${{ vars.VPC_ID }}" \
+          -var "private_subnet_id=${{ vars.PRIVATE_SUBNET_ID }}" \
+          -var "vpc_cidr_block=${{ vars.VPC_CIDR_BLOCK }}" \
+          -var "key_pair_name=${{ vars.KEY_PAIR_NAME }}" \
+          -var "kms_key_id=${{ vars.KMS_KEY_ID }}" \
+          -auto-approve \
+          -compact-warnings

@@ -1,6 +1,7 @@
 # ------------------------------------------------------------
 # GitHub Actions CI/CD Configuration
-# This file contains GitHub Actions OIDC and IAM resources
+# This file contains GitHub Actions OIDC, IAM resources, and repository variables
+# when ci_cd_provider = "github-actions"
 # ------------------------------------------------------------
 
 # ------------------------------------------------------------
@@ -189,4 +190,134 @@ resource "aws_iam_role_policy_attachment" "github_actions_custom_policy" {
 
   role       = aws_iam_role.github_actions[0].name
   policy_arn = aws_iam_policy.github_actions[0].arn
+}
+
+# ------------------------------------------------------------
+# GitHub Repository Variables for GitHub Actions
+# These variables are automatically created in the GitHub repository
+# and used by the GitHub Actions workflow for CI/CD
+# ------------------------------------------------------------
+
+# AWS Region
+resource "github_actions_variable" "aws_region" {
+  count = var.ci_cd_provider == "github-actions" ? 1 : 0
+
+  repository    = var.github_repo
+  variable_name = "AWS_REGION"
+  value         = var.aws_region
+}
+
+# AWS Role ARN for OIDC authentication
+resource "github_actions_variable" "aws_role_arn" {
+  count = var.ci_cd_provider == "github-actions" ? 1 : 0
+
+  repository    = var.github_repo
+  variable_name = "AWS_ROLE_ARN"
+  value         = aws_iam_role.github_actions[0].arn
+
+  depends_on = [aws_iam_role.github_actions]
+}
+
+# Build project name
+resource "github_actions_variable" "build_project_name" {
+  count = var.ci_cd_provider == "github-actions" ? 1 : 0
+
+  repository    = var.github_repo
+  variable_name = "BUILD_PROJECT_NAME"
+  value         = var.build_project_name
+}
+
+# Custom QNX AMI ID
+resource "github_actions_variable" "qnx_custom_ami_id" {
+  count = var.ci_cd_provider == "github-actions" ? 1 : 0
+
+  repository    = var.github_repo
+  variable_name = "QNX_CUSTOM_AMI_ID"
+  value         = var.qnx_custom_ami_id
+}
+
+# VPC ID
+resource "github_actions_variable" "vpc_id" {
+  count = var.ci_cd_provider == "github-actions" ? 1 : 0
+
+  repository    = var.github_repo
+  variable_name = "VPC_ID"
+  value         = module.vpc.vpc_id
+
+  depends_on = [module.vpc]
+}
+
+# Private Subnet ID
+resource "github_actions_variable" "private_subnet_id" {
+  count = var.ci_cd_provider == "github-actions" ? 1 : 0
+
+  repository    = var.github_repo
+  variable_name = "PRIVATE_SUBNET_ID"
+  value         = module.vpc.private_subnets[0]
+
+  depends_on = [module.vpc]
+}
+
+# VPC CIDR Block
+resource "github_actions_variable" "vpc_cidr_block" {
+  count = var.ci_cd_provider == "github-actions" ? 1 : 0
+
+  repository    = var.github_repo
+  variable_name = "VPC_CIDR_BLOCK"
+  value         = module.vpc.vpc_cidr_block
+
+  depends_on = [module.vpc]
+}
+
+# EC2 Key Pair Name
+resource "github_actions_variable" "key_pair_name" {
+  count = var.ci_cd_provider == "github-actions" ? 1 : 0
+
+  repository    = var.github_repo
+  variable_name = "KEY_PAIR_NAME"
+  value         = aws_key_pair.key_pair.key_name
+
+  depends_on = [aws_key_pair.key_pair]
+}
+
+# Private Key Secret ID
+resource "github_actions_variable" "private_key_secret_id" {
+  count = var.ci_cd_provider == "github-actions" ? 1 : 0
+
+  repository    = var.github_repo
+  variable_name = "PRIVATE_KEY_SECRET_ID"
+  value         = aws_secretsmanager_secret.private_key.id
+
+  depends_on = [aws_secretsmanager_secret.private_key]
+}
+
+# KMS Key ID
+resource "github_actions_variable" "kms_key_id" {
+  count = var.ci_cd_provider == "github-actions" ? 1 : 0
+
+  repository    = var.github_repo
+  variable_name = "KMS_KEY_ID"
+  value         = aws_kms_key.kms_key.id
+
+  depends_on = [aws_kms_key.kms_key]
+}
+
+# Terraform Version
+resource "github_actions_variable" "tf_version" {
+  count = var.ci_cd_provider == "github-actions" ? 1 : 0
+
+  repository    = var.github_repo
+  variable_name = "TF_VERSION"
+  value         = var.terraform_version
+}
+
+# Terraform Backend S3 Bucket
+resource "github_actions_variable" "tf_backend_s3" {
+  count = var.ci_cd_provider == "github-actions" ? 1 : 0
+
+  repository    = var.github_repo
+  variable_name = "TF_BACKEND_S3"
+  value         = aws_s3_bucket.ci_artifacts[0].bucket
+
+  depends_on = [aws_s3_bucket.ci_artifacts]
 }

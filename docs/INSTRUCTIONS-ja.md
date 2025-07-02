@@ -21,9 +21,16 @@
   - [QNX SDP での開発](#qnx-sdp-での開発)
 - [VS Code と Amazon Q Developer での開発](#vs-code-と-amazon-q-developer-での開発)
 - [AWS 開発者ツールでの CI の実行](#aws-開発者ツールでの-ci-の実行)
-  - [GitHub への接続の更新](#github-への接続の更新)
-  - [コードの準備と設定](#コードの準備と設定)
-  - [CI パイプラインの実行](#ci-パイプラインの実行)
+  - [CI/CD プロバイダーの選択](#cicd-プロバイダーの選択)
+  - [オプション1: GitHub Actions セットアップ（デフォルト）](#オプション1-github-actions-セットアップデフォルト)
+    - [GitHub リポジトリ変数の設定](#github-リポジトリ変数の設定)
+    - [コードの準備と設定](#コードの準備と設定)
+    - [GitHub Actions ワークフローの実行](#github-actions-ワークフローの実行)
+  - [オプション2: AWS CodeBuild/CodePipeline セットアップ](#オプション2-aws-codebuildcodepipeline-セットアップ)
+    - [GitHub への接続の更新](#github-への接続の更新)
+    - [コードの準備と設定](#コードの準備と設定-1)
+    - [CI パイプラインの実行](#ci-パイプラインの実行)
+  - [CI/CD ワークフロー比較](#cicd-ワークフロー比較)
 
 
 ## ワークショップ環境の準備
@@ -157,8 +164,8 @@ ubuntu_instance_type = "t3.xlarge"
 # Ubuntuルートディスクサイズ (GB)
 ubuntu_root_volume_size = 20
 
-# CodeBuild環境用Terraform バージョン
-codebuild_terraform_version = "1.9.3"
+# CI/CD環境用Terraformバージョン
+terraform_version = "1.9.3"
 ```
 
 
@@ -337,22 +344,73 @@ GitHub、CodeBuild、CodePipeline などの開発者ツールを使用して、E
 
 ### GitHub への接続の更新
 
-AWS CodePipeline が GitHub リポジトリに接続できるようにするため、接続を手動で更新する必要があります。これは GitHub アカウントに AWS Connector for GitHub をインストールすることで実行できます。
+## AWS 開発者ツールでの CI の実行
 
+AWS CodeBuild/CodePipeline または GitHub Actions を使用して、EC2 QNX インスタンスでの CI プロセスを自動化する方法を実演します。ワークショップでは両方のアプローチをサポートしており、ニーズに最適な CI/CD ソリューションを選択できます。
 
-Developer Tools コンソールで **Settings** > **Connections** に移動してください。terraform デプロイの一部としてデプロイした接続（例: `qnx-on-aws-ws-xx`）を選択し、**Update pending connection** をクリックしてください。
+### CI/CD プロバイダーの選択
 
-![Setup connection](image/setup-connection-1.png)
+ワークショップでは2つのCI/CDオプションをサポートしています：
 
-次の画面で **Install a new app** をクリックすると、GitHub ページにリダイレクトされます。その後、[Create a connection to GitHub](https://docs.aws.amazon.com/dtconsole/latest/userguide/connections-create-github.html#connections-create-github-console) の関連手順に従って、GitHub リポジトリへの接続を設定してください。正常に更新されると、接続のステータスが `Available` と表示されます。
+1. **GitHub Actions**（デフォルト）: AWS OIDC認証を使用したGitHubネイティブCI/CD
+2. **AWS CodeBuild/CodePipeline**: 深いAWS統合を持つフルマネージドAWSサービス
 
+`terraform/terraform.tfvars` で選択を設定してください：
 
+```shell
+# CI/CD設定
+ci_cd_provider = "github-actions"   # GitHub Actionsを使用（デフォルト）
+# ci_cd_provider = "codebuild"      # AWS CodeBuild/CodePipelineを使用
+```
 
+### オプション1: GitHub Actions セットアップ（デフォルト）
 
-### コードの準備と設定
+#### GitHub リポジトリ変数の設定
 
-`terraform/` ディレクトリで以下のコマンドを実行して、空の GitHub リポジトリをホームディレクトリにクローンしてください。**`xx` を 2 桁の ID に置き換えてください**（例: `qnx-on-aws-ws-01-hello-world`）。
+GitHub Actions を使用する場合、Terraform が必要なリポジトリ変数を**自動的に作成**します。認証用のGitHubトークンを提供するだけで済みます。
 
+**ステップ1: GitHub Personal Access Token の作成**
+
+1. GitHub → **Settings** → **Developer settings** → **Personal access tokens** → **Tokens (classic)** に移動
+2. **Generate new token (classic)** をクリック
+3. 説明的な名前を付けます（例: "QNX Workshop Terraform"）
+4. **repo** スコープを選択（プライベートリポジトリの完全制御）
+5. **Generate token** をクリックしてトークンをコピー
+
+**ステップ2: GitHub トークンの設定**
+
+環境変数としてトークンを設定します（推奨）：
+```shell
+export GITHUB_TOKEN="your_github_personal_access_token_here"
+```
+
+**ステップ3: インフラストラクチャのデプロイ**
+
+`ci_cd_provider = "github-actions"` でインフラストラクチャをデプロイした後、Terraform が必要なリポジトリ変数を自動的に作成します：
+
+```shell
+terraform apply
+```
+
+以下の変数がGitHubリポジトリに自動的に作成されます：
+- `AWS_REGION` - AWSリージョン
+- `AWS_ROLE_ARN` - OIDC認証用GitHub Actions IAMロールARN
+- `BUILD_PROJECT_NAME` - ビルドプロジェクト名
+- `QNX_CUSTOM_AMI_ID` - カスタムQNX AMI ID
+- `VPC_ID` - TerraformからのVPC ID
+- `PRIVATE_SUBNET_ID` - プライベートサブネットID
+- `VPC_CIDR_BLOCK` - VPC CIDRブロック
+- `KEY_PAIR_NAME` - EC2キーペア名
+- `PRIVATE_KEY_SECRET_ID` - Secrets Managerシークレット ID
+- `KMS_KEY_ID` - KMSキーID
+- `TF_VERSION` - Terraformバージョン
+- `TF_BACKEND_S3` - Terraform状態用S3バケット
+
+**手動での変数設定は不要です！** ✨
+
+#### コードの準備と設定
+
+`terraform/` ディレクトリで以下のコマンドを実行して、GitHubリポジトリをクローンし、ワークショップファイルをコピーしてください：
 
 ```shell
 REPO_URL=$(terraform output -raw github_repository_url)
@@ -362,6 +420,48 @@ git clone ${REPO_URL}
 cd ./${REPO_NAME}
 ```
 
+GitHub Actions ワークフローを含むすべてのファイルをコピー：
+
+```shell
+cp -a <WORKSHOP_DIR>/github-example-repo/* ./
+cp -a <WORKSHOP_DIR>/github-example-repo/.github ./
+```
+
+#### GitHub Actions ワークフローの実行
+
+変更をGitHubリポジトリにコミットしてプッシュしてください。これによりGitHub Actionsワークフローがトリガーされ、EC2 QNXインスタンスをデプロイして定義されたタスクを実行します。
+
+```shell
+git add -A
+git commit -m "Add GitHub Actions CI/CD pipeline"
+git push origin main
+```
+
+GitHubリポジトリ → **Actions** タブに移動してワークフローの実行を監視してください。
+
+### オプション2: AWS CodeBuild/CodePipeline セットアップ
+
+#### GitHub への接続の更新
+
+AWS CodePipeline が GitHub リポジトリに接続できるようにするため、接続を手動で更新する必要があります。これは GitHub アカウントに AWS Connector for GitHub をインストールすることで実行できます。
+
+Developer Tools コンソールで **Settings** > **Connections** に移動してください。terraform デプロイの一部としてデプロイした接続（例: `qnx-on-aws-ws-xx`）を選択し、**Update pending connection** をクリックしてください。
+
+![Setup connection](image/setup-connection-1.png)
+
+次の画面で **Install a new app** をクリックすると、GitHub ページにリダイレクトされます。その後、[Create a connection to GitHub](https://docs.aws.amazon.com/dtconsole/latest/userguide/connections-create-github.html#connections-create-github-console) の関連手順に従って、GitHub リポジトリへの接続を設定してください。正常に更新されると、接続のステータスが `Available` と表示されます。
+
+#### コードの準備と設定
+
+`terraform/` ディレクトリで以下のコマンドを実行して、空の GitHub リポジトリをホームディレクトリにクローンしてください。**`xx` を 2 桁の ID に置き換えてください**（例: `qnx-on-aws-ws-01-hello-world`）。
+
+```shell
+REPO_URL=$(terraform output -raw github_repository_url)
+REPO_NAME=$(terraform output -raw github_repository_name)
+cd ~
+git clone ${REPO_URL}
+cd ./${REPO_NAME}
+```
 
 ワークショップパッケージの `github-example-repo/` ディレクトリ内のすべてのファイルを、クローンしたローカルリポジトリにコピーしてください。
 
@@ -369,7 +469,7 @@ cd ./${REPO_NAME}
 cp -a <WORKSHOP_DIR>/github-example-repo/* ./
 ```
 
-### CI パイプラインの実行
+#### CI パイプラインの実行
 
 変更を GitHub リポジトリにコミットしてプッシュしてください。リポジトリに新しい変更をプッシュすると、CodePipeline パイプラインがトリガーされ、CodeBuild プロジェクトが開始されます。プロジェクトは EC2 QNX インスタンスをデプロイし、`buildspec.yaml` で定義されたコマンドを実行します。
 
@@ -380,3 +480,22 @@ git push origin main
 ```
 
 リージョンの [CodePipeline console](https://console.aws.amazon.com/codesuite/codepipeline/pipelines) に移動し、パイプライン名（例: `qnx-on-aws-ws-01`）をクリックして詳細な進行状況を確認してください。
+
+### CI/CD ワークフロー比較
+
+| 機能 | GitHub Actions | CodeBuild/CodePipeline |
+|------|----------------|------------------------|
+| **セットアップ** | リポジトリ変数が必要 | GitHub接続が必要 |
+| **監視** | GitHub Actions UI | AWSコンソール |
+| **設定** | `.github/workflows/qnx-ci.yml` | `buildspec.yaml` |
+| **トリガー** | ネイティブGitHubトリガー | GitHubウェブフック |
+| **コスト** | GitHub Actions分数 | AWS CodeBuild料金 |
+| **デフォルト選択** | ✓ 推奨 | 代替案 |
+
+両方のアプローチで同じ機能を提供：
+- 一時的なQNX EC2インスタンスをデプロイ
+- QNXターゲット上でアプリケーションを実行
+- リソースを自動的にクリーンアップ
+- セキュアな認証とアクセス制御
+
+詳細なセットアップ手順とトラブルシューティングについては、[CI/CDセットアップガイド](../github-example-repo/README-CI-SETUP.md) を参照してください。

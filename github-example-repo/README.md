@@ -1,20 +1,46 @@
-# CI/CD Setup Guide for QNX on AWS Workshop
+# CI/CD Setup Guide for QNX on AWS Workshop <!-- omit in toc -->
 
-**English** | [日本語](README-CI-SETUP-ja.md)
+**English** | [日本語](README-ja.md)
 
 This guide explains how to set up Continuous Integration/Continuous Deployment (CI/CD) for the QNX on AWS workshop using either AWS CodeBuild/CodePipeline or GitHub Actions.
 
 ## Table of Contents
 
+- [Table of Contents](#table-of-contents)
 - [Overview](#overview)
 - [Prerequisites](#prerequisites)
 - [CI/CD Provider Selection](#cicd-provider-selection)
 - [Option 1: GitHub Actions Setup (Default)](#option-1-github-actions-setup-default)
+   - [1. Configure Terraform Variables](#1-configure-terraform-variables)
+   - [2. Set up GitHub Authentication](#2-set-up-github-authentication)
+   - [3. Deploy Infrastructure](#3-deploy-infrastructure)
+   - [4. Automatic Repository Variables Setup ✨](#4-automatic-repository-variables-setup-)
+   - [5. Copy Repository Files](#5-copy-repository-files)
+   - [6. Monitor Workflow](#6-monitor-workflow)
 - [Option 2: AWS CodeBuild/CodePipeline Setup](#option-2-aws-codebuildcodepipeline-setup)
+   - [1. Configure Terraform Variables](#1-configure-terraform-variables-1)
+   - [2. Deploy Infrastructure](#2-deploy-infrastructure)
+   - [3. Configure GitHub Connection](#3-configure-github-connection)
+   - [4. Copy Repository Files](#4-copy-repository-files)
+   - [5. Monitor Pipeline](#5-monitor-pipeline)
 - [Repository Structure](#repository-structure)
 - [CI/CD Workflow](#cicd-workflow)
+   - [Customizing the Workflow](#customizing-the-workflow)
+      - [Modify Application Logic](#modify-application-logic)
+      - [Adjust Instance Count](#adjust-instance-count)
+      - [Change Application Arguments](#change-application-arguments)
 - [Switching Between Providers](#switching-between-providers)
+- [Comparison](#comparison)
 - [Troubleshooting](#troubleshooting)
+   - [Common Issues](#common-issues)
+      - [CodeBuild Issues](#codebuild-issues)
+      - [GitHub Actions Issues](#github-actions-issues)
+   - [Debugging Steps](#debugging-steps)
+   - [Security Considerations](#security-considerations)
+      - [CodeBuild](#codebuild)
+      - [GitHub Actions](#github-actions)
+- [Next Steps](#next-steps)
+
 
 ## Overview
 
@@ -63,7 +89,22 @@ github_user = "your-github-username"
 github_repo = "your-repository-name"
 ```
 
-### 2. Deploy Infrastructure
+### 2. Set up GitHub Authentication
+
+**Create a GitHub Personal Access Token:**
+
+1. Go to GitHub → **Settings** → **Developer settings** → **Personal access tokens** → **Tokens (classic)**
+2. Click **Generate new token (classic)**
+3. Give it a descriptive name (e.g., "QNX Workshop Terraform")
+4. Select the **repo** scope (full control of private repositories)
+5. Click **Generate token** and copy the token
+
+**Set the token as an environment variable (recommended):**
+```bash
+export GITHUB_TOKEN="your_github_personal_access_token_here"
+```
+
+### 3. Deploy Infrastructure
 
 ```bash
 cd terraform/
@@ -71,41 +112,26 @@ terraform plan
 terraform apply --auto-approve
 ```
 
-### 3. Configure GitHub Repository Variables
+### 4. Automatic Repository Variables Setup ✨
 
-After deployment, get the environment variables from Terraform:
+**No manual setup required!** Terraform will automatically create all required GitHub repository variables:
 
-```bash
-terraform output ci_environment_variables
-```
+- `AWS_REGION` - Your AWS region
+- `AWS_ROLE_ARN` - IAM role ARN for OIDC authentication
+- `BUILD_PROJECT_NAME` - Your build project name
+- `QNX_CUSTOM_AMI_ID` - Your custom QNX AMI ID
+- `VPC_ID` - VPC ID from Terraform
+- `PRIVATE_SUBNET_ID` - Private subnet ID
+- `VPC_CIDR_BLOCK` - VPC CIDR block
+- `KEY_PAIR_NAME` - EC2 key pair name
+- `PRIVATE_KEY_SECRET_ID` - Secrets Manager secret ID
+- `KMS_KEY_ID` - KMS key ID
+- `TF_VERSION` - Terraform version
+- `TF_BACKEND_S3` - S3 bucket for Terraform state
 
-In your GitHub repository, go to **Settings** → **Secrets and variables** → **Actions** → **Variables** tab and add:
+You can verify the variables were created by checking: **Repository** → **Settings** → **Secrets and variables** → **Actions** → **Variables** tab
 
-| Variable Name | Value | Description |
-|---------------|-------|-------------|
-| `AWS_REGION` | `ap-northeast-1` | Your AWS region |
-| `AWS_ROLE_ARN` | `arn:aws:iam::123456789012:role/...` | IAM role ARN for OIDC |
-| `BUILD_PROJECT_NAME` | `qnx-on-aws-ws-pl-xx` | Your build project name |
-| `QNX_CUSTOM_AMI_ID` | `ami-xxxxxxxxx` | Your custom QNX AMI ID |
-| `VPC_ID` | `vpc-xxxxxxxxx` | VPC ID from Terraform |
-| `PRIVATE_SUBNET_ID` | `subnet-xxxxxxxxx` | Private subnet ID |
-| `VPC_CIDR_BLOCK` | `10.1.0.0/16` | VPC CIDR block |
-| `KEY_PAIR_NAME` | `qnx-on-aws-ws-xx-key-pair` | EC2 key pair name |
-| `PRIVATE_KEY_SECRET_ID` | `qnx-on-aws-ws-xx-private-key` | Secrets Manager secret ID |
-| `KMS_KEY_ID` | `arn:aws:kms:...` | KMS key ID |
-| `TF_VERSION` | `1.9.3` | Terraform version |
-| `TF_BACKEND_S3` | `qnx-on-aws-ws-xx-ci-artifacts-...` | S3 bucket for Terraform state |
-
-**Quick Setup Script:**
-
-```bash
-# Get all variables from Terraform output
-terraform output -json ci_environment_variables | jq -r 'to_entries[] | "\(.key)=\(.value)"'
-
-# Copy these values to your GitHub repository variables
-```
-
-### 4. Copy Repository Files
+### 5. Copy Repository Files
 
 ```bash
 # Get repository information from Terraform outputs
@@ -127,7 +153,7 @@ git commit -m "Add GitHub Actions CI/CD configuration"
 git push origin main
 ```
 
-### 5. Monitor Workflow
+### 6. Monitor Workflow
 
 1. Go to your GitHub repository
 2. Click **Actions** tab

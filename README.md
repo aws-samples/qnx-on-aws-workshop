@@ -19,6 +19,8 @@
     - [GitHub repository](#github-repository)
 - [Instructions](#instructions)
 - [CI/CD Options](#cicd-options)
+    - [GitHub Actions (Default)](#github-actions-default)
+    - [AWS CodeBuild/CodePipeline](#aws-codebuildcodepipeline)
 - [References](#references)
     - [QNX 8.x](#qnx-8x)
     - [QNX 7.x](#qnx-7x)
@@ -109,7 +111,7 @@ qnx-on-aws-workshop/
 │   ├── src/
 │   │   └── get_primes.c                # Sample CI application source
 │   ├── variables.tf                    # Terraform variable configurations for CI pipeline
-│   ├── setup-github-actions.sh         # Helper script for GitHub Actions setup
+│   ├── verify-github-actions.sh         # GitHub Actions verification script
 │   ├── README-CI-SETUP.md              # Comprehensive CI/CD setup guide
 │   └── README-CI-SETUP-ja.md           # CI/CD setup guide (Japanese)
 ├── simple-qnx-cockpit/                 # Simple QNX cockpit application
@@ -123,6 +125,7 @@ qnx-on-aws-workshop/
     ├── ci-shared-resources.tf          # Shared CI/CD resources (S3, etc.)
     ├── ci-codebuild.tf                 # AWS CodeBuild/CodePipeline resources
     ├── ci-github-actions.tf            # GitHub Actions OIDC and IAM resources
+    ├── ci-github-actions-automation.tf # GitHub Actions repository variables automation
     ├── ec2-qnx.tf                      # Terraform configurations for EC2 QNX instance
     ├── ec2-ubuntu.tf                   # Terraform configurations for EC2 Ubuntu instance
     ├── keys_and_secrets.tf             # Terraform configurations for EC2 key pair, secrets and KMS
@@ -236,7 +239,7 @@ ci_cd_provider = "github-actions"   # GitHub Actions (default)
 # ci_cd_provider = "codebuild"      # AWS CodeBuild/CodePipeline
 ```
 
-For detailed setup instructions, see [CI/CD Setup Guide](github-example-repo/README-CI-SETUP.md).
+For detailed setup instructions, see [CI/CD Setup Guide](github-example-repo/README.md).
 
 
 ## References

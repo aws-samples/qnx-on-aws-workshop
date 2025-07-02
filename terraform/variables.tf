@@ -44,6 +44,13 @@ variable "github_repo" {
   default     = ""
 }
 
+variable "github_token" {
+  description = "GitHub personal access token for repository management (only required for GitHub Actions). Token needs 'repo' scope permissions to manage repository variables."
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
 # ------------------------------------------------------------
 # EC2 QNX Configuration Variables
 # ------------------------------------------------------------
@@ -143,8 +150,8 @@ variable "ci_cd_provider" {
   default     = "github-actions"
 
   validation {
-    condition     = contains(["codebuild", "github-actions"], var.ci_cd_provider)
-    error_message = "CI/CD provider must be either 'codebuild' or 'github-actions'."
+    condition     = contains(["codebuild", "github-actions", "none"], var.ci_cd_provider)
+    error_message = "CI/CD provider must be either 'codebuild', 'github-actions', or 'none'."
   }
 }
 
@@ -168,12 +175,5 @@ variable "terraform_version" {
     condition     = can(regex("^[0-9]+\\.[0-9]+\\.[0-9]+$", var.terraform_version))
     error_message = "Terraform version must be in semantic version format (e.g., 1.9.3)."
   }
-}
-
-# Legacy variable for backward compatibility
-variable "codebuild_terraform_version" {
-  description = "Terraform version to use in CodeBuild (deprecated, use terraform_version instead)"
-  type        = string
-  default     = ""
 }
 

@@ -18,6 +18,9 @@
         - [QNX AMI サブスクリプション](#qnx-ami-サブスクリプション)
     - [GitHub リポジトリ](#github-リポジトリ)
 - [手順](#手順)
+- [CI/CD オプション](#cicd-オプション)
+    - [GitHub Actions (デフォルト)](#github-actions-デフォルト)
+    - [AWS CodeBuild/CodePipeline](#aws-codebuildcodepipeline)
 - [参考資料](#参考資料)
     - [QNX 8.x](#qnx-8x)
     - [QNX 7.x](#qnx-7x)
@@ -194,6 +197,37 @@ qnx-on-aws-workshop/
 ## 手順
 
 詳細な手順については、[手順](docs/INSTRUCTIONS-ja.md) を参照してください。
+
+
+## CI/CD オプション
+
+ワークショップでは2つのCI/CDアプローチをサポートしています：
+
+### GitHub Actions (デフォルト)
+- **最適な用途**: GitHubを主要な開発プラットフォームとして使用するチーム
+- **機能**: ネイティブGitHub統合、OIDC認証、長期間有効な認証情報不要
+- **セットアップ**: GitHubでのリポジトリ変数設定が必要
+- **設定**: ワークフロー定義に `.github/workflows/qnx-ci.yml` を使用
+
+### AWS CodeBuild/CodePipeline
+- **最適な用途**: すでにAWSサービスを広範囲に使用しているチーム
+- **機能**: 深いAWS統合、VPCサポート、CloudWatchログ
+- **セットアップ**: AWSコンソールでのGitHub接続設定が必要
+- **設定**: ビルド仕様に `buildspec.yaml` を使用
+
+両方のオプション共通機能:
+- テスト用の一時的なQNX EC2インスタンスをデプロイ
+- QNXターゲット上でアプリケーションを実行
+- リソースを自動的にクリーンアップ
+- セキュアな認証とアクセス制御を提供
+
+**プロバイダーの選択** は `terraform/terraform.tfvars` で `ci_cd_provider` を設定します：
+```hcl
+ci_cd_provider = "github-actions"   # GitHub Actions (デフォルト)
+# ci_cd_provider = "codebuild"      # AWS CodeBuild/CodePipeline
+```
+
+詳細なセットアップ手順については、[CI/CDセットアップガイド](github-example-repo/README-ja.md) を参照してください。
 
 
 ## 参考資料

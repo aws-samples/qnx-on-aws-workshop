@@ -21,6 +21,16 @@ ubuntu_user_password = "YourStrongPassword123!"
 github_user = "your-github-username"    # Your GitHub username
 github_repo = "your-repository-name"    # Repository containing workshop code
 
+# GitHub token for automatic repository variable management (GitHub Actions only)
+# RECOMMENDED: Set via environment variable: export GITHUB_TOKEN="your_token_here"
+# ALTERNATIVE: Uncomment and set the token below (less secure)
+# github_token = "your_github_personal_access_token"
+
+# To create a GitHub token:
+# 1. Go to GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic)
+# 2. Generate new token with 'repo' scope (full control of private repositories)
+# 3. Copy the token and set it via GITHUB_TOKEN environment variable
+
 # CodeBuild project name for CI/CD pipeline
 build_project_name = "qnx-on-aws-ws-pl-xx"  # Replace `xx` with same ID as project_name
 
@@ -69,9 +79,6 @@ terraform_version = "1.9.3"
 # qnx_instance_profile_name = "AmazonSSMRoleForInstancesQuickSetup"
 # ubuntu_instance_profile_name = "AmazonSSMRoleForInstancesQuickSetup"
 
-# Legacy variable for backward compatibility (will use terraform_version if not set)
-# codebuild_terraform_version = "1.9.3"
-
 # =============================================================================
 # CONFIGURATION VALIDATION
 # =============================================================================
@@ -83,6 +90,7 @@ terraform_version = "1.9.3"
 # ✓ github_user and github_repo are correct
 # ✓ build_project_name uses same ID as project_name
 # ✓ ci_cd_provider is set to your preferred option
+# ✓ GITHUB_TOKEN environment variable is set (for GitHub Actions)
 
 # For CI/CD setup instructions, see:
 # - docs/INSTRUCTIONS.md (main workshop instructions)

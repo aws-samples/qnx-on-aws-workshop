@@ -21,9 +21,16 @@
   - [Develop with QNX SDP](#develop-with-qnx-sdp)
 - [Develop with VS Code and Amazon Q Developer](#develop-with-vs-code-and-amazon-q-developer)
 - [Run CI with AWS developer tools](#run-ci-with-aws-developer-tools)
-  - [Update a connection to GitHub](#update-a-connection-to-github)
-  - [Prepare and configure the code](#prepare-and-configure-the-code)
-  - [Execute a CI pipeline](#execute-a-ci-pipeline)
+  - [Choose your CI/CD provider](#choose-your-cicd-provider)
+  - [Option 1: GitHub Actions Setup (Default)](#option-1-github-actions-setup-default)
+    - [Configure GitHub repository variables](#configure-github-repository-variables)
+    - [Prepare and configure the code](#prepare-and-configure-the-code)
+    - [Execute a GitHub Actions workflow](#execute-a-github-actions-workflow)
+  - [Option 2: AWS CodeBuild/CodePipeline Setup](#option-2-aws-codebuildcodepipeline-setup)
+    - [Update a connection to GitHub](#update-a-connection-to-github)
+    - [Prepare and configure the code](#prepare-and-configure-the-code-1)
+    - [Execute a CI pipeline](#execute-a-ci-pipeline)
+  - [CI/CD Workflow Comparison](#cicd-workflow-comparison)
 
 
 ## Prepare workshop environment
@@ -157,8 +164,8 @@ ubuntu_instance_type = "t3.xlarge"
 # Ubuntu root disk size in GB
 ubuntu_root_volume_size = 20
 
-# Terraform version for CodeBuild environment
-codebuild_terraform_version = "1.9.3"
+# Terraform version for CI/CD environment
+terraform_version = "1.9.3"
 ```
 
 
@@ -354,28 +361,46 @@ ci_cd_provider = "github-actions"   # Use GitHub Actions (default)
 
 #### Configure GitHub repository variables
 
-After deploying the infrastructure with `ci_cd_provider = "github-actions"`, get the required configuration values:
+When using GitHub Actions, Terraform will **automatically create** all required repository variables for you. You just need to provide a GitHub token for authentication.
 
+**Step 1: Create a GitHub Personal Access Token**
+
+1. Go to GitHub → **Settings** → **Developer settings** → **Personal access tokens** → **Tokens (classic)**
+2. Click **Generate new token (classic)**
+3. Give it a descriptive name (e.g., "QNX Workshop Terraform")
+4. Select the **repo** scope (full control of private repositories)
+5. Click **Generate token** and copy the token
+
+**Step 2: Set the GitHub token**
+
+Set the token as an environment variable (recommended):
 ```shell
-terraform output ci_environment_variables
+export GITHUB_TOKEN="your_github_personal_access_token_here"
 ```
 
-In your GitHub repository, go to **Settings** → **Secrets and variables** → **Actions** → **Variables** tab and add the following repository variables:
+**Step 3: Deploy the infrastructure**
 
-| Variable Name | Description |
-|---------------|-------------|
-| `AWS_REGION` | Your AWS region |
-| `AWS_ROLE_ARN` | GitHub Actions IAM role ARN for OIDC authentication |
-| `BUILD_PROJECT_NAME` | Your build project name |
-| `QNX_CUSTOM_AMI_ID` | Your custom QNX AMI ID |
-| `VPC_ID` | VPC ID from Terraform |
-| `PRIVATE_SUBNET_ID` | Private subnet ID |
-| `VPC_CIDR_BLOCK` | VPC CIDR block |
-| `KEY_PAIR_NAME` | EC2 key pair name |
-| `PRIVATE_KEY_SECRET_ID` | Secrets Manager secret ID |
-| `KMS_KEY_ID` | KMS key ID |
-| `TF_VERSION` | Terraform version |
-| `TF_BACKEND_S3` | S3 bucket for Terraform state |
+After deploying the infrastructure with `ci_cd_provider = "github-actions"`, Terraform will automatically create all required repository variables:
+
+```shell
+terraform apply
+```
+
+The following variables will be automatically created in your GitHub repository:
+- `AWS_REGION` - Your AWS region
+- `AWS_ROLE_ARN` - GitHub Actions IAM role ARN for OIDC authentication  
+- `BUILD_PROJECT_NAME` - Your build project name
+- `QNX_CUSTOM_AMI_ID` - Your custom QNX AMI ID
+- `VPC_ID` - VPC ID from Terraform
+- `PRIVATE_SUBNET_ID` - Private subnet ID
+- `VPC_CIDR_BLOCK` - VPC CIDR block
+- `KEY_PAIR_NAME` - EC2 key pair name
+- `PRIVATE_KEY_SECRET_ID` - Secrets Manager secret ID
+- `KMS_KEY_ID` - KMS key ID
+- `TF_VERSION` - Terraform version
+- `TF_BACKEND_S3` - S3 bucket for Terraform state
+
+**No manual variable setup required!** ✨
 
 #### Prepare and configure the code
 

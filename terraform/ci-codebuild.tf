@@ -83,7 +83,7 @@ resource "aws_codebuild_project" "workshop" {
     }
     environment_variable {
       name  = "TF_VERSION"
-      value = var.codebuild_terraform_version != "" ? var.codebuild_terraform_version : var.terraform_version
+      value = var.terraform_version
       type  = "PLAINTEXT"
     }
     environment_variable {

@@ -133,6 +133,24 @@ output "github_actions_oidc_provider_arn" {
   value       = var.ci_cd_provider == "github-actions" ? aws_iam_openid_connect_provider.github_actions[0].arn : null
 }
 
+output "github_actions_variables_created" {
+  description = "List of GitHub Actions repository variables automatically created"
+  value = var.ci_cd_provider == "github-actions" ? [
+    "AWS_REGION",
+    "AWS_ROLE_ARN", 
+    "BUILD_PROJECT_NAME",
+    "QNX_CUSTOM_AMI_ID",
+    "VPC_ID",
+    "PRIVATE_SUBNET_ID",
+    "VPC_CIDR_BLOCK",
+    "KEY_PAIR_NAME",
+    "PRIVATE_KEY_SECRET_ID",
+    "KMS_KEY_ID",
+    "TF_VERSION",
+    "TF_BACKEND_S3"
+  ] : null
+}
+
 # Environment variables for CI/CD setup
 output "ci_environment_variables" {
   description = "Environment variables needed for CI/CD setup"

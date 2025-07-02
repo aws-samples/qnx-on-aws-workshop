@@ -13,6 +13,10 @@ terraform {
       source  = "hashicorp/tls"
       version = "= 4.1.0"
     }
+    github = {
+      source  = "integrations/github"
+      version = "~> 6.0"
+    }
   }
 }
 
@@ -26,6 +30,15 @@ provider "aws" {
       Project = var.project_name
     }
   }
+}
+
+# GitHub provider configuration (only used when ci_cd_provider = "github-actions")
+provider "github" {
+  # Authentication via token - can be provided via:
+  # 1. GITHUB_TOKEN environment variable (recommended)
+  # 2. github_token variable in terraform.tfvars
+  token = var.github_token != "" ? var.github_token : null
+  owner = var.github_user
 }
 
 # ------------------------------------------------------------

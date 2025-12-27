@@ -40,7 +40,7 @@ qnx_instance_type = "c7g.xlarge"
 
 # Ubuntu instance type - used for development and cross-compilation
 # Options: t3.large, t3.xlarge, t3.2xlarge, m5.large, m5.xlarge, etc.
-ubuntu_instance_type = "t3.xlarge"
+ubuntu_instance_type = "t3.2xlarge"
 
 # Ubuntu root disk size in GB
 ubuntu_root_volume_size = 20

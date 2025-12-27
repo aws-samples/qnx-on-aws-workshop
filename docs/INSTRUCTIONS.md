@@ -19,7 +19,7 @@
 - [Install and develop with QNX SDP](#install-and-develop-with-qnx-sdp)
   - [Install QNX Software](#install-qnx-software)
   - [Develop with QNX SDP](#develop-with-qnx-sdp)
-- [Develop with VS Code and Amazon Q Developer](#develop-with-vs-code-and-amazon-q-developer)
+- [Develop with Kiro IDE](#develop-with-kiro-ide)
 - [Run CI with AWS developer tools](#run-ci-with-aws-developer-tools)
   - [Update a connection to GitHub](#update-a-connection-to-github)
   - [Prepare and configure the code](#prepare-and-configure-the-code)
@@ -322,11 +322,11 @@ We install and use QNX software on the development host.
 Please refer to QNX documentations above. If you want to learn further advanced QNX development, please refer to [QNX Training | Embedded Development and Product Training](https://blackberry.qnx.com/en/services/training).
 
 
-## Develop with VS Code and Amazon Q Developer
+## Develop with Kiro IDE
 
-We use modern development tools including Visual Studio Code with QNX Toolkit extension and Amazon Q Developer for efficient QNX application development.
+We use modern development tools including Kiro IDE with QNX Toolkit extension for efficient QNX application development.
 
-We demonstrate cross-platform QNX development using VS Code with a simple QNX cockpit application. The workshop covers code understanding with Amazon Q Developer, automated build and deployment, and cross-platform compatibility between Linux and QNX targets.
+We demonstrate cross-platform QNX development using Kiro IDE with a simple QNX cockpit application. The workshop covers AI-powered code understanding, automated build and deployment, and cross-platform compatibility between Linux and QNX targets.
 
 Please refer to the full workshop instructions for detailed steps at [BlackBerry QNX on AWS workshop](https://catalog.workshops.aws/qnx-on-aws).
 

@@ -8,19 +8,14 @@
 - [Architecture overview](#architecture-overview)
 - [File structure](#file-structure)
 - [Prerequisites](#prerequisites)
-    - [AWS environment](#aws-environment)
-        - [AWS account](#aws-account)
-        - [AWS credentials](#aws-credentials)
-        - [AWS region](#aws-region)
-    - [Client PC](#client-pc)
-    - [QNX software](#qnx-software)
-        - [myQNX account and QNX product evaluation license](#myqnx-account-and-qnx-product-evaluation-license)
-        - [QNX AMI subscription](#qnx-ami-subscription)
-    - [GitHub repository](#github-repository)
+  - [AWS environment](#aws-environment)
+  - [Client PC](#client-pc)
+  - [QNX software](#qnx-software)
+  - [GitHub repository](#github-repository)
 - [Instructions](#instructions)
 - [References](#references)
-    - [QNX 8.x](#qnx-8x)
-    - [QNX 7.x](#qnx-7x)
+  - [QNX 8.x](#qnx-8x)
+  - [QNX 7.x](#qnx-7x)
 - [Security](#security)
 - [License](#license)
 
@@ -43,10 +38,10 @@ BlackBerry® QNX® has been widely used to build mission-critical embedded syste
 With the combination of new **QNX Amazon Machine Image (AMI)** and **Amazon EC2 instances powered by AWS Graviton Processors** (an Arm-based processor developed by AWS), AWS customers can use the agility, flexibility and scalability of the AWS Cloud to support their embedded software development.
 
 
-The workshop also includes modern QNX development using **Visual Studio Code** and **Amazon Q Developer**:
+The workshop also includes modern QNX development using **Kiro IDE**:
 
-* VS Code Integration: Modern IDE experience with QNX Toolkit extension for cross-platform development and automated build/deployment
-* Amazon Q Developer: AI-powered coding agent for code understanding, enhancement, optimization, and troubleshooting
+* Kiro IDE Integration: Modern IDE experience with QNX Toolkit extension for cross-platform development and automated build/deployment
+* AI-Powered Development: Built-in AI coding agent for code understanding, enhancement, optimization, and troubleshooting
 * Cross-Platform Development: Single codebase that runs on both Linux and QNX targets
 
 This approach improves developer productivity and reduces time-to-market for embedded QNX applications.

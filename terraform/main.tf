@@ -56,7 +56,7 @@ locals {
     ap-northeast-1 = "ami-00d87a0d18aed9c04"
     ap-northeast-2 = "ami-0552ae8b891aad54a"
     ap-southeast-1 = "ami-03909bede4707f162"
-    eu-centeral-1  = "ami-0aba071c35966df3a"
+    eu-central-1   = "ami-0aba071c35966df3a"
     eu-west-1      = "ami-09fc3726b8fdb44aa"
     us-east-1      = "ami-0d07d4120bfb8ef3d"
     us-west-2      = "ami-0095b80a82406356a"

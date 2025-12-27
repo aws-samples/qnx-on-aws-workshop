@@ -10,14 +10,64 @@ sed -i.bak -e "s%^port=3389$%port=tcp://:3389%g" /etc/xrdp/xrdp.ini
 sed -i 's/^#\?cliprdr=.*/cliprdr=true/' /etc/xrdp/xrdp.ini
 sed -i 's/^#\?rdpdr=.*/rdpdr=true/' /etc/xrdp/xrdp.ini
 
-systemctl restart xrdp
+# Disable console session to avoid "login failed for display 0" error
+# Always create a new session instead of trying to connect to console
+sed -i 's/^#\?autorun=.*/autorun=Xorg/' /etc/xrdp/xrdp.ini
+sed -i '/^\[Xorg\]/,/^\[/ s/^#\?port=.*/port=-1/' /etc/xrdp/sesman.ini
 
-# Install xfce4-clipman for clipboard persistence
+# Configure xrdp startwm to use xfce4
+cat > /etc/xrdp/startwm.sh << 'STARTWMEOF'
+#!/bin/sh
+# Fix for xrdp session disconnect issue
+unset DBUS_SESSION_BUS_ADDRESS
+unset XDG_RUNTIME_DIR
+
+if [ -r /etc/default/locale ]; then
+  . /etc/default/locale
+  export LANG LANGUAGE
+fi
+export XDG_SESSION_TYPE=x11
+export XDG_CURRENT_DESKTOP=XFCE
+exec startxfce4
+STARTWMEOF
+chmod +x /etc/xrdp/startwm.sh
+
+# Install Firefox as deb (not snap) BEFORE ubuntu-desktop
+# This prevents ubuntu-desktop from installing snap version
+add-apt-repository ppa:mozillateam/ppa -y
+echo 'Package: *
+Pin: release o=LP-PPA-mozillateam
+Pin-Priority: 1001' | tee /etc/apt/preferences.d/mozilla-firefox
+apt update
+apt install firefox -y
+
+# Install additional packages
 apt install xfce4-clipman -y
 apt install ubuntu-desktop -y
-apt install firefox -y
 apt install net-tools -y
 apt install cmake g++ -y
+
+# Remove snap firefox if ubuntu-desktop installed it
+snap remove firefox 2>/dev/null || true
+
+# Create Firefox desktop shortcut
+mkdir -p /home/ubuntu/Desktop
+cat > /home/ubuntu/Desktop/firefox.desktop << 'FIREFOXEOF'
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Firefox
+Icon=firefox
+Exec=firefox %u
+Terminal=false
+Categories=Network;WebBrowser;
+StartupWMClass=firefox
+FIREFOXEOF
+chmod +x /home/ubuntu/Desktop/firefox.desktop
+chown ubuntu:ubuntu /home/ubuntu/Desktop/firefox.desktop
+
+# Restart xrdp after all configuration
+systemctl restart xrdp
 
 # Install AWS CLI
 curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
@@ -39,8 +89,13 @@ im-config -n ibus
 
 # Configure IBus with Mozc for Japanese input
 mkdir -p /home/ubuntu/.config/ibus/bus
-runuser -l ubuntu -c 'dbus-launch gsettings set org.gnome.desktop.input-sources sources "[(\"ibus\", \"mozc-jp\")]"'
-runuser -l ubuntu -c 'dbus-launch gsettings set org.gnome.desktop.input-sources mru-sources "[(\"ibus\", \"mozc-jp\")]"'
+runuser -l ubuntu -c 'dbus-launch gsettings set org.gnome.desktop.input-sources sources "[(\"xkb\", \"jp\"), (\"ibus\", \"mozc-jp\")]"'
+runuser -l ubuntu -c 'dbus-launch gsettings set org.gnome.desktop.input-sources mru-sources "[(\"xkb\", \"jp\"), (\"ibus\", \"mozc-jp\")]"'
+
+# Configure input source switching keybindings
+# OADG keyboards send "Kanji" for the Hankaku/Zenkaku key
+runuser -l ubuntu -c 'dbus-launch gsettings set org.gnome.desktop.wm.keybindings switch-input-source "[\"<Super>space\", \"Zenkaku_Hankaku\", \"Kanji\"]"'
+runuser -l ubuntu -c 'dbus-launch gsettings set org.gnome.desktop.wm.keybindings switch-input-source-backward "[\"<Shift><Super>space\"]"'
 
 # Set IBus as default input method
 cat > /home/ubuntu/.xinputrc << 'IMEOF'

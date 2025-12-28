@@ -105,7 +105,7 @@ Type=Application
 Name=IBus Setup Complete
 X-GNOME-Autostart-enabled=false
 IBUSEOF
-chown -R ubuntu:ubuntu /home/ubuntu/.config/ibus
+chown -R ubuntu:ubuntu /home/ubuntu/.config
 
 # =============================================================================
 # Install VS Code

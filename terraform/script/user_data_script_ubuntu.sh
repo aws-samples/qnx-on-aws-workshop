@@ -189,8 +189,7 @@ package_extension_as_vsix() {
 CTEOF
         
         # Create VSIX from temp directory
-        cd "$temp_dir"
-        zip -r "$vsix_file" . -x "*.git*" > /dev/null 2>&1
+        (cd "$temp_dir" && zip -r "$vsix_file" . -x "*.git*" > /dev/null 2>&1)
         rm -rf "$temp_dir"
         
         echo "Created $vsix_file"

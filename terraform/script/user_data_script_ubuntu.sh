@@ -2,16 +2,14 @@
 
 # Update software
 apt update -y
-apt install xfce4 xfce4-goodies -y
-apt install xrdp -y
+apt install -y xfce4 xfce4-goodies xrdp
 sed -i.bak -e "s%^port=3389$%port=tcp://:3389%g" /etc/xrdp/xrdp.ini
 
 # Enable clipboard redirection in xrdp
 sed -i 's/^#\?cliprdr=.*/cliprdr=true/' /etc/xrdp/xrdp.ini
 sed -i 's/^#\?rdpdr=.*/rdpdr=true/' /etc/xrdp/xrdp.ini
 
-# Disable console session to avoid "login failed for display 0" error
-# Always create a new session instead of trying to connect to console
+# Disable console session to avoid "login failed for display 0"
 sed -i 's/^#\?autorun=.*/autorun=Xorg/' /etc/xrdp/xrdp.ini
 sed -i '/^\[Xorg\]/,/^\[/ s/^#\?port=.*/port=-1/' /etc/xrdp/sesman.ini
 
@@ -32,8 +30,7 @@ exec startxfce4
 STARTWMEOF
 chmod +x /etc/xrdp/startwm.sh
 
-# Install Firefox as deb (not snap) BEFORE ubuntu-desktop
-# This prevents ubuntu-desktop from installing snap version
+# Install Firefox deb (not snap) before ubuntu-desktop
 add-apt-repository ppa:mozillateam/ppa -y
 echo 'Package: *
 Pin: release o=LP-PPA-mozillateam
@@ -42,10 +39,7 @@ apt update
 apt install firefox -y
 
 # Install additional packages
-apt install xfce4-clipman -y
-apt install ubuntu-desktop -y
-apt install net-tools -y
-apt install cmake g++ -y
+apt install -y xfce4-clipman ubuntu-desktop net-tools cmake g++
 
 # Remove snap firefox if ubuntu-desktop installed it
 snap remove firefox 2>/dev/null || true
@@ -160,11 +154,9 @@ cat > /home/ubuntu/.config/Code/User/settings.json << EOF
 EOF
 
 # =============================================================================
-# Copy installed extensions as VSIX files for offline use
-# Extensions are installed via VS Code's --install-extension command above,
-# then packaged as VSIX files from the installed extension directories.
-# This approach uses VS Code's official extension installation mechanism.
+# VSIX packaging for offline use
 # =============================================================================
+apt-get install -y zip
 mkdir -p /home/ubuntu/vsix-extensions
 
 # Function to package installed extension as VSIX
@@ -214,16 +206,12 @@ package_extension_as_vsix "ms-vscode.cpptools" "/home/ubuntu/vsix-extensions"
 chown -R ubuntu:ubuntu /home/ubuntu/vsix-extensions
 
 # =============================================================================
-# Install Kiro IDE and Kiro CLI
-# Reference: https://kiro.dev/downloads/
+# Kiro IDE and CLI
 # =============================================================================
 
-# -----------------------------------------------------------------------------
-# 1. Install Kiro IDE (Desktop Application)
-# -----------------------------------------------------------------------------
-# Get latest version and download tar.gz
+# Install Kiro IDE
 cd /tmp
-apt-get install -y jq  # Ensure jq is installed for JSON parsing
+apt-get install -y jq
 
 VERSION=$(curl -sf https://prod.download.desktop.kiro.dev/stable/metadata-linux-x64-stable.json | jq -er .currentRelease)
 if [ -z "$VERSION" ] || [ "$VERSION" = "null" ]; then
@@ -237,10 +225,9 @@ else
     tar -xzf kiro-ide.tar.gz -C /opt/kiro-ide --strip-components=1
     rm kiro-ide.tar.gz
 
-    # Set ownership - user owns everything except chrome-sandbox
+    # Set ownership
     chown -R ubuntu:ubuntu /opt/kiro-ide
-
-    # Fix chrome-sandbox permissions for Electron (must be root with setuid)
+    # chrome-sandbox needs root with setuid
     chown root:root /opt/kiro-ide/chrome-sandbox
     chmod 4755 /opt/kiro-ide/chrome-sandbox
 
@@ -269,19 +256,11 @@ KIROEOF
     echo "Kiro IDE installed successfully"
 fi
 
-# -----------------------------------------------------------------------------
-# 2. Install Kiro CLI (Command Line Interface)
-# -----------------------------------------------------------------------------
-# Install Kiro CLI for ubuntu user using official installer
+# Install Kiro CLI
 runuser -l ubuntu -c 'curl -fsSL https://cli.kiro.dev/install | bash'
-
-# Add Kiro CLI to PATH (installer adds to ~/.local/bin)
 echo 'export PATH="$HOME/.local/bin:$PATH"' >> /home/ubuntu/.bashrc
 
-# -----------------------------------------------------------------------------
-# 3. Configure Kiro IDE settings for QNX development
-# -----------------------------------------------------------------------------
-# Kiro settings location on Linux: ~/.config/Kiro/User/settings.json
+# Configure Kiro IDE settings
 mkdir -p /home/ubuntu/.config/Kiro/User
 cat > /home/ubuntu/.config/Kiro/User/settings.json << EOF
 {
@@ -299,11 +278,9 @@ cat > /home/ubuntu/.config/Kiro/User/settings.json << EOF
 EOF
 chown -R ubuntu:ubuntu /home/ubuntu/.config
 
-# Add QNX tools to PATH for ubuntu user
+# QNX environment
 echo 'export PATH="/home/ubuntu/qnx800/host/linux/x86_64/usr/bin:$PATH"' >> /home/ubuntu/.bashrc
 chown ubuntu:ubuntu /home/ubuntu/.bashrc
-
-# Configure QNX SDP environment for ubuntu user
 echo '[ -f "/home/ubuntu/qnx800/qnxsdp-env.sh" ] && source "/home/ubuntu/qnx800/qnxsdp-env.sh"' >> /home/ubuntu/.bashrc
 
 # Download simple-qnx-cockpit from QNX Workshop

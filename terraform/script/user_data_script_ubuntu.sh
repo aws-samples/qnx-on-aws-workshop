@@ -3,9 +3,10 @@
 # Update software
 apt update -y
 apt install -y xfce4 xfce4-goodies xrdp
+
+# xrdp config
 sed -i.bak -e "s%^port=3389$%port=tcp://:3389%g" /etc/xrdp/xrdp.ini
 
-# Enable clipboard redirection in xrdp
 sed -i 's/^#\?cliprdr=.*/cliprdr=true/' /etc/xrdp/xrdp.ini
 sed -i 's/^#\?rdpdr=.*/rdpdr=true/' /etc/xrdp/xrdp.ini
 

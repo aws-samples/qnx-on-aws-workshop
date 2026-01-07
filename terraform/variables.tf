@@ -84,8 +84,8 @@ variable "ubuntu_instance_type" {
   default     = "t3.xlarge"
 
   validation {
-    condition     = can(regex("^[a-z][1-9]+\\.[a-z]+$", var.ubuntu_instance_type))
-    error_message = "Ubuntu instance type must be in the format like 't3.medium' or 'm5.large'."
+    condition     = can(regex("^[a-z]+[0-9]+[a-z]*\\.(nano|micro|small|medium|x?large|[0-9]+xlarge|metal)$", var.ubuntu_instance_type))
+    error_message = "Ubuntu instance type must be a valid EC2 instance type format (e.g., 't3.medium', 'm5.large', 'c7g.xlarge', 't3.2xlarge')."
   }
 }
 
